@@ -1,0 +1,290 @@
+/* ------------------------------------------------------------------- modals */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  overflow-y: auto;
+  background: rgba(38, 24, 14, 0.58);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  animation: fadeIn 0.25s ease;
+}
+
+.modal-card {
+  position: relative;
+  width: min(480px, 100%);
+  max-height: 100%;
+  overflow-y: auto;
+  padding: clamp(26px, 5vw, 38px);
+  border: 1px solid rgba(120, 86, 58, 0.18);
+  border-radius: 26px;
+  background: linear-gradient(180deg, #fffdf9, #fbf5ec);
+  box-shadow:
+    0 40px 90px -20px rgba(30, 16, 6, 0.6),
+    inset 0 1px 0 #fff;
+  outline: none;
+  animation: cardIn 0.35s cubic-bezier(0.2, 0.8, 0.3, 1.1);
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.modal-card::-webkit-scrollbar {
+  width: 10px;
+}
+
+.modal-card::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background: rgba(120, 86, 58, 0.25);
+  background-clip: padding-box;
+}
+
+.modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(120, 86, 58, 0.18);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.6);
+  color: var(--ink-500);
+  cursor: pointer;
+  transition:
+    background 0.16s ease,
+    color 0.16s ease;
+}
+
+.modal-close:hover {
+  background: #fff;
+  color: var(--ink-900);
+}
+
+.modal-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 16px;
+  padding: 5px 11px;
+  border: 1px solid rgba(217, 119, 54, 0.2);
+  border-radius: 999px;
+  background: rgba(217, 119, 54, 0.1);
+  color: var(--copper-600);
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.19em;
+  text-transform: uppercase;
+}
+
+.modal-card h1 {
+  margin: 0 0 12px;
+  font-family: var(--font-display);
+  font-size: clamp(1.7rem, 4vw, 2.1rem);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--ink-900);
+}
+
+.modal-copy {
+  margin: 0 0 22px;
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: var(--ink-500);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.modal-actions .btn {
+  flex: 1 1 auto;
+}
+
+.modal-footnote {
+  margin: 18px 0 0;
+  text-align: center;
+  font-size: 0.66rem;
+  color: var(--ink-400);
+}
+
+/* ------------------------------------------------------------- welcome list */
+.welcome-list {
+  list-style: none;
+  margin: 0 0 26px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.welcome-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.welcome-list li > span {
+  flex: 0 0 27px;
+  height: 27px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(217, 119, 54, 0.16);
+  border-radius: 9px;
+  background: rgba(217, 119, 54, 0.1);
+  color: var(--copper-600);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+}
+
+.welcome-list strong {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 0.82rem;
+  color: var(--ink-900);
+}
+
+.welcome-list p {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: var(--ink-400);
+}
+
+/* --------------------------------------------------------------- help panel */
+.shortcut-list {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 10px 16px;
+  margin: 0 0 22px;
+}
+
+.shortcut-list dt {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  color: var(--ink-700);
+}
+
+.shortcut-list dd {
+  margin: 0;
+  font-size: 0.7rem;
+  color: var(--ink-400);
+  text-align: right;
+}
+
+.help-note {
+  margin-bottom: 24px;
+  padding: 13px 15px;
+  border: 1px solid rgba(217, 119, 54, 0.16);
+  border-radius: 12px;
+  background: rgba(217, 119, 54, 0.06);
+  font-size: 0.76rem;
+  line-height: 1.55;
+  color: var(--ink-500);
+}
+
+.help-note strong {
+  color: var(--ink-700);
+}
+
+/* -------------------------------------------------------------------- toast */
+.ready-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 26px;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: min(600px, calc(100vw - 24px));
+  max-width: min(600px, calc(100vw - 24px));
+  padding: 11px 14px 11px 16px;
+  border: 1px solid rgba(217, 119, 54, 0.3);
+  border-radius: 16px;
+  background: rgba(255, 252, 246, 0.96);
+  box-shadow:
+    0 20px 45px rgba(60, 35, 15, 0.26),
+    0 0 0 6px rgba(255, 255, 255, 0.24);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transform: translateX(-50%);
+  animation: toastIn 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+
+.ready-toast__dot {
+  flex: 0 0 auto;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--mint-400);
+  box-shadow: 0 0 0 5px rgba(53, 224, 181, 0.18);
+}
+
+.ready-toast p {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  font-size: 0.76rem;
+  line-height: 1.45;
+  color: var(--ink-700);
+}
+
+.ready-toast strong {
+  color: var(--ink-900);
+}
+
+.ready-toast--coffee {
+  border-color: rgba(217, 119, 54, 0.36);
+}
+
+.ready-toast--coffee .ready-toast__dot {
+  background: var(--copper-400);
+  box-shadow: 0 0 0 5px rgba(217, 119, 54, 0.16);
+}
+
+.ready-toast--break {
+  border-color: rgba(15, 174, 139, 0.36);
+}
+
+.ready-toast--break .ready-toast__dot {
+  background: var(--mint-500);
+  box-shadow: 0 0 0 5px rgba(15, 174, 139, 0.14);
+}
+
+.toast-actions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.toast-ghost {
+  padding: 7px 11px;
+  border: 1px solid rgba(120, 86, 58, 0.24);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.5);
+  color: var(--ink-700);
+  font-size: 0.68rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background 0.16s ease,
+    transform 0.16s ease;
+}
+
+.toast-ghost:hover {
+  background: #fff;
+  transform: translateY(-1px);
+}

@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cozy Coffee Break</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      font-family: 'Nunito', sans-serif;
+      user-select: none;
+    }
+    .font-cute {
+      font-family: 'Fredoka', cursive;
+    }
+
+    /* Soft Kawaii Floating Animation */
+    @keyframes floaty {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-8px) rotate(1deg); }
+    }
+    .animate-float {
+      animation: floaty 4s ease-in-out infinite;
+    }
+
+    /* Liquid pouring stream */
+    @keyframes pourStream {
+      0% { height: 0; opacity: 0; }
+      15% { height: 100%; opacity: 0.95; }
+      85% { height: 100%; opacity: 0.95; }
+      100% { height: 0; opacity: 0; }
+    }
+    .pour-active {
+      animation: pourStream 4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    }
+
+    /* Steam rising */
+    @keyframes steamRise {
+      0% { transform: translateY(0) scaleX(1); opacity: 0; }
+      40% { opacity: 0.7; }
+      80% { transform: translateY(-30px) scaleX(1.4); opacity: 0.3; }
+      100% { transform: translateY(-50px) scaleX(1.8); opacity: 0; }
+    }
+    .steam-puff-1 { animation: steamRise 2.2s infinite ease-out; }
+    .steam-puff-2 { animation: steamRise 2.5s infinite ease-out 0.6s; }
+    .steam-puff-3 { animation: steamRise 2.8s infinite ease-out 1.1s; }
+
+    /* Coffee machine LED screen pulsing */
+    @keyframes ledGlow {
+      0%, 100% { box-shadow: 0 0 10px rgba(52, 211, 153, 0.4); }
+      50% { box-shadow: 0 0 18px rgba(52, 211, 153, 0.8); }
+    }
+    .led-screen {
+      animation: ledGlow 2.5s infinite;
+    }
+
+    /* Pulse for ready buttons */
+    @keyframes buttonHint {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    .hint-pulse {
+      animation: buttonHint 1.4s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body class="bg-[#FFF7ED] min-h-screen text-[#4A3728] flex flex-col justify-between overflow-x-hidden relative">
+
+  <!-- Background decorative cafe elements -->
+  <div class="fixed inset-0 pointer-events-none opacity-40 overflow-hidden z-0">
+    <div class="absolute -top-12 -left-12 w-64 h-64 rounded-full bg-[#FED7AA] blur-3xl"></div>
+    <div class="absolute top-1/2 -right-20 w-80 h-80 rounded-full bg-[#FDE68A] blur-3xl"></div>
+    <div class="absolute -bottom-20 left-1/3 w-96 h-96 rounded-full bg-[#FFEDD5] blur-3xl"></div>
+  </div>
+
+  <!-- Top Navigation / Header -->
+  <header class="relative z-10 w-full max-w-4xl mx-auto pt-6 px-4 flex justify-between items-center">
+    <div class="flex items-center gap-3">
+      <div class="w-11 h-11 bg-[#8B5E3C] text-white rounded-2xl flex items-center justify-center text-2xl shadow-md transform -rotate-3 hover:rotate-0 transition-transform">
+        ☕
+      </div>
+      <div>
+        <h1 class="font-cute text-2xl md:text-3xl font-bold text-[#5C3D2E] tracking-wide">Office Cozy Cafe</h1>
+        <p class="text-xs md:text-sm text-[#A07855] font-semibold">Self-service breakroom dispenser</p>
+      </div>
+    </div>
+
+    <!-- Sound Toggle Button -->
+    <button id="soundToggleBtn" onclick="toggleAudio()" class="px-4 py-2 bg-white/80 hover:bg-white text-[#785135] text-sm font-bold rounded-full shadow-sm border border-[#E8D5C4] flex items-center gap-2 transition active:scale-95">
+      <span id="soundIcon">🔊</span>
+      <span id="soundText">Sound ON</span>
+    </button>
+  </header>
+
+  <!-- MAIN INTERACTIVE CONTAINER -->
+  <main class="relative z-10 flex-1 flex items-center justify-center p-4">
+    <div class="w-full max-w-xl">
+
+      <!-- ================= STEP 1: WELCOME SCREEN ================= -->
+      <section id="stepWelcome" class="text-center py-10 px-6 bg-white/70 backdrop-blur-md rounded-3xl border-2 border-[#F3E5D8] shadow-xl">
+        <div class="w-28 h-28 mx-auto mb-6 bg-[#FED7AA] rounded-full flex items-center justify-center text-5xl shadow-inner animate-float">
+          ☕✨
+        </div>
+        <h2 class="font-cute text-3xl md:text-4xl font-bold text-[#4A2E1B] mb-3">Time for a quick break?</h2>
+        <p class="text-[#7D5A44] mb-8 text-base md:text-lg max-w-md mx-auto leading-relaxed">
+          The office coffee machine is freshly restocked and warming up for you!
+        </p>
+        <button onclick="goToAskStep()" class="font-cute text-xl px-10 py-4 bg-gradient-to-r from-[#B45309] to-[#854D0E] hover:from-[#92400E] hover:to-[#713F12] text-white font-bold rounded-2xl shadow-lg hover:shadow-amber-900/30 transform hover:-translate-y-0.5 active:translate-y-0 transition">
+          Start Brewing ➔
+        </button>
+      </section>
+
+      <!-- ================= STEP 2: DECISION MODAL / SCREEN ================= -->
+      <section id="stepQuestion" class="hidden text-center py-12 px-6 bg-white/80 backdrop-blur-md rounded-3xl border-2 border-[#F3E5D8] shadow-xl">
+        <div class="w-20 h-20 mx-auto mb-5 bg-[#FDE68A] rounded-full flex items-center justify-center text-4xl shadow-inner animate-bounce">
+          🤔
+        </div>
+        <h2 class="font-cute text-2xl md:text-3xl font-bold text-[#4A2E1B] mb-3">Brew coffee today?</h2>
+        <p class="text-[#7D5A44] mb-8 text-base">
+          Fresh beans are ready to be brewed into something warm and delicious.
+        </p>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <button onclick="goToMachineStep()" class="w-full sm:w-auto font-cute text-lg px-8 py-3.5 bg-[#16A34A] hover:bg-[#15803D] text-white font-bold rounded-2xl shadow-md hover:shadow-green-700/30 transform active:scale-95 transition">
+            ✨ Yes, Brew Coffee!
+          </button>
+          <button onclick="goToExitStep()" class="w-full sm:w-auto font-cute text-lg px-8 py-3.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-2xl border border-gray-300 shadow-sm active:scale-95 transition">
+            🚪 Maybe Later (Exit)
+          </button>
+        </div>
+      </section>
+
+      <!-- ================= STEP 2B: EXIT SCREEN ================= -->
+      <section id="stepExit" class="hidden text-center py-12 px-6 bg-white/70 backdrop-blur-md rounded-3xl border-2 border-[#F3E5D8] shadow-xl">
+        <div class="w-24 h-24 mx-auto mb-5 bg-blue-50 rounded-full flex items-center justify-center text-4xl shadow-inner">
+          😴💤
+        </div>
+        <h2 class="font-cute text-2xl md:text-3xl font-bold text-[#4A2E1B] mb-2">Taking a raincheck?</h2>
+        <p class="text-[#7D5A44] mb-8 text-base max-w-sm mx-auto">
+          No worries! The breakroom coffee machine will be right here whenever you need that caffeine boost.
+        </p>
+        <button onclick="goToAskStep()" class="font-cute text-base px-6 py-3 bg-[#8B5E3C] hover:bg-[#724B2E] text-white font-bold rounded-xl shadow transition">
+          ↩ Actually, I want coffee!
+        </button>
+      </section>
+
+      <!-- ================= STEP 3: THE COFFEE MACHINE SCREEN ================= -->
+      <section id="stepMachine" class="hidden flex flex-col items-center">
+        
+        <!-- Status Instruction Helper Bubble -->
+        <div id="statusInstruction" class="mb-4 bg-white/90 border border-[#E0CFBD] shadow-md px-5 py-2.5 rounded-full flex items-center gap-2.5 text-sm md:text-base font-bold text-[#5C3D2E] transition-all">
+          <span class="text-xl">👇</span>
+          <span id="instructionText">First, put a mug in the tray or pick your coffee flavor!</span>
+        </div>
+
+        <!-- The Coffee Machine Body -->
+        <div class="relative w-full max-w-md bg-gradient-to-b from-[#3D3734] via-[#2D2825] to-[#1E1B19] rounded-[36px] p-6 shadow-2xl border-4 border-[#524B47] text-white flex flex-col items-center">
+          
+          <!-- Machine Brand / Top Plate -->
+          <div class="w-full flex justify-between items-center pb-3 border-b border-stone-700/70 mb-4 px-2">
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-red-500 shadow-sm"></span>
+              <span class="w-3 h-3 rounded-full bg-yellow-400 shadow-sm"></span>
+              <span class="w-3 h-3 rounded-full bg-emerald-500 shadow-sm animate-pulse"></span>
+              <span class="text-[11px] uppercase tracking-widest font-black text-stone-400 ml-1">OfficePro Barista 3000</span>
+            </div>
+            <span class="text-xs text-stone-400 font-mono">92°C READY</span>
+          </div>
+
+          <!-- Digital LED Display -->
+          <div class="w-full bg-[#061811] led-screen border-2 border-emerald-800 rounded-2xl p-3 text-emerald-400 font-mono text-center mb-5 flex flex-col items-center justify-center min-h-[72px]">
+            <div class="text-[11px] uppercase text-emerald-500 font-semibold tracking-wider">SYSTEM SCREEN</div>
+            <div id="ledDisplay" class="text-lg font-bold tracking-wider text-emerald-300">
+              [ READY ] SELECT DRINK
+            </div>
+          </div>
+
+          <!-- Beverage Selection Row -->
+          <div class="w-full mb-5">
+            <label class="block text-xs uppercase tracking-wider text-stone-400 font-bold mb-2 text-center">
+              1. Select Beverage Type
+            </label>
+            <div class="grid grid-cols-3 gap-2">
+              <button onclick="selectCoffee('cappuccino')" id="btn-cappuccino" class="coffee-opt-btn bg-stone-800/90 hover:bg-stone-700 active:scale-95 border-2 border-amber-500/60 p-2.5 rounded-xl flex flex-col items-center gap-1 transition">
+                <span class="text-xl">☕</span>
+                <span class="text-xs font-bold font-cute">Cappuccino</span>
+              </button>
+              <button onclick="selectCoffee('latte')" id="btn-latte" class="coffee-opt-btn bg-stone-800/60 hover:bg-stone-700 active:scale-95 border border-stone-600 p-2.5 rounded-xl flex flex-col items-center gap-1 transition">
+                <span class="text-xl">🥛</span>
+                <span class="text-xs font-bold font-cute">Caffè Latte</span>
+              </button>
+              <button onclick="selectCoffee('espresso')" id="btn-espresso" class="coffee-opt-btn bg-stone-800/60 hover:bg-stone-700 active:scale-95 border border-stone-600 p-2.5 rounded-xl flex flex-col items-center gap-1 transition">
+                <span class="text-xl">⚡</span>
+                <span class="text-xs font-bold font-cute">Espresso</span>
+              </button>
+              <button onclick="selectCoffee('americano')" id="btn-americano" class="coffee-opt-btn bg-stone-800/60 hover:bg-stone-700 active:scale-95 border border-stone-600 p-2.5 rounded-xl flex flex-col items-center gap-1 transition">
+                <span class="text-xl">💧</span>
+                <span class="text-xs font-bold font-cute">Americano</span>
+              </button>
+              <button onclick="selectCoffee('mocha')" id="btn-mocha" class="coffee-opt-btn bg-stone-800/60 hover:bg-stone-700 active:scale-95 border border-stone-600 p-2.5 rounded-xl flex flex-col items-center gap-1 transition">
+                <span class="text-xl">🍫</span>
+                <span class="text-xs font-bold font-cute">Hot Mocha</span>
+              </button>
+              <button onclick="selectCoffee('caramel')" id="btn-caramel" class="coffee-opt-btn bg-stone-800/60 hover:bg-stone-700 active:scale-95 border border-stone-600 p-2.5 rounded-xl flex flex-col items-center gap-1 transition">
+                <span class="text-xl">🍯</span>
+                <span class="text-xs font-bold font-cute">Caramel Macchiato</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Dispenser Chamber / Niche -->
+          <div class="relative w-full h-56 bg-gradient-to-b from-[#181615] to-[#100F0E] rounded-2xl border-2 border-stone-700 p-3 flex flex-col justify-between items-center shadow-inner overflow-hidden mb-5">
+            
+            <!-- Dual Spout / Dispenser Head -->
+            <div class="relative flex flex-col items-center z-20">
+              <div class="w-16 h-4 bg-gradient-to-r from-stone-400 via-stone-200 to-stone-400 rounded-t-sm shadow-sm"></div>
+              <div class="flex gap-4">
+                <div class="w-2.5 h-3 bg-stone-300 rounded-b-sm shadow"></div>
+                <div class="w-2.5 h-3 bg-stone-300 rounded-b-sm shadow"></div>
+              </div>
+
+              <!-- Animated Liquid Pour Streams -->
+              <div id="liquidStream" class="hidden absolute top-7 flex gap-4 pointer-events-none z-10">
+                <div id="stream1" class="w-1.5 h-28 bg-[#522915] rounded-full shadow-[0_0_8px_rgba(180,83,9,0.8)]"></div>
+                <div id="stream2" class="w-1.5 h-28 bg-[#522915] rounded-full shadow-[0_0_8px_rgba(180,83,9,0.8)]"></div>
+              </div>
+            </div>
+
+            <!-- Mug Area -->
+            <div id="mugArea" class="relative z-20 w-full flex justify-center items-end pb-1">
+              
+              <!-- Empty Placement Placeholder (when mug not placed) -->
+              <button id="placeholderBtn" onclick="toggleMug(true)" class="group flex flex-col items-center justify-center p-3 border-2 border-dashed border-stone-500/70 hover:border-amber-400 rounded-2xl bg-stone-900/40 hover:bg-amber-950/20 transition cursor-pointer">
+                <span class="text-2xl group-hover:scale-110 transition-transform">☕</span>
+                <span class="text-xs font-bold text-amber-300 mt-1">Tap to place your mug here</span>
+              </button>
+
+              <!-- The Mug itself -->
+              <div id="cupContainer" class="hidden relative flex-col items-center transition-all duration-500 transform translate-y-0">
+                
+                <!-- Rising Steam element -->
+                <div id="steamPuffs" class="hidden absolute -top-10 flex gap-2 justify-center pointer-events-none">
+                  <span class="text-stone-300 text-lg steam-puff-1">~</span>
+                  <span class="text-stone-300 text-2xl steam-puff-2">~</span>
+                  <span class="text-stone-300 text-lg steam-puff-3">~</span>
+                </div>
+
+                <!-- Cup body -->
+                <div class="relative w-20 h-24 bg-gradient-to-r from-amber-100 via-white to-amber-50 rounded-b-[24px] rounded-t-[6px] border-2 border-amber-200/80 shadow-lg overflow-hidden flex flex-col justify-end">
+                  
+                  <!-- Cup Face (Kawaii detail) -->
+                  <div class="absolute inset-0 flex items-center justify-center text-xs opacity-70 pointer-events-none">
+                    <span id="cupFace" class="font-bold text-[#5c3d2e] select-none">(◕‿◕)</span>
+                  </div>
+
+                  <!-- Liquid level rising inside cup -->
+                  <div id="cupLiquid" class="w-full h-0 transition-all duration-[3800ms] ease-out rounded-b-[20px] relative overflow-hidden bg-[#432311]">
+                    <!-- Froth/Crema top layer -->
+                    <div id="cupFroth" class="w-full h-2.5 bg-[#F6D8AC] opacity-90 shadow-sm"></div>
+                  </div>
+                </div>
+
+                <!-- Cup Handle -->
+                <div class="absolute top-4 -right-3 w-5 h-12 border-4 border-amber-200/90 rounded-r-xl pointer-events-none"></div>
+
+                <!-- Cup Saucer -->
+                <div class="w-24 h-2.5 bg-gradient-to-r from-stone-300 via-stone-100 to-stone-300 rounded-full shadow-md -mt-1"></div>
+              </div>
+            </div>
+
+            <!-- Stainless Steel Drip Tray -->
+            <div class="w-full h-4 bg-gradient-to-b from-stone-600 via-stone-500 to-stone-700 rounded-md border-t border-stone-400 flex items-center justify-around px-2">
+              <span class="w-2 h-1 bg-stone-800 rounded"></span>
+              <span class="w-2 h-1 bg-stone-800 rounded"></span>
+              <span class="w-2 h-1 bg-stone-800 rounded"></span>
+              <span class="w-2 h-1 bg-stone-800 rounded"></span>
+              <span class="w-2 h-1 bg-stone-800 rounded"></span>
+              <span class="w-2 h-1 bg-stone-800 rounded"></span>
+            </div>
+          </div>
+
+          <!-- Bottom Big Machine Buttons -->
+          <div class="w-full flex items-center justify-between gap-3 pt-2">
+            
+            <!-- Remove / Place Mug Quick Action -->
+            <button id="cupActionButton" onclick="toggleMug()" class="flex-1 text-xs sm:text-sm font-bold py-3 px-3 bg-stone-700 hover:bg-stone-600 text-stone-200 rounded-xl transition active:scale-95 border border-stone-500">
+              ☕ <span id="cupActionLabel">Place Mug</span>
+            </button>
+
+            <!-- Main Start Brew Button -->
+            <button id="startBrewBtn" onclick="startBrewingProcess()" class="flex-1 font-cute text-base sm:text-lg font-bold py-3 px-4 rounded-xl shadow-lg transition transform active:scale-95 bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center gap-2">
+              <span>▶</span>
+              <span id="brewBtnText">Start Brew</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Finished Success / Enjoy Toast Banner -->
+        <div id="enjoyBanner" class="hidden mt-6 w-full max-w-md bg-white border-2 border-emerald-400 rounded-2xl p-4 shadow-xl text-center transform transition-all duration-300">
+          <div class="text-3xl mb-1">🎉 ☕ ✨</div>
+          <h3 id="bannerTitle" class="font-cute text-2xl font-bold text-[#4A2E1B]">Your Coffee is Ready!</h3>
+          <p id="bannerDesc" class="text-sm text-[#7D5A44] mb-3">Freshly pulled, hot, and aromatic.</p>
+          <div class="flex gap-2 justify-center">
+            <button onclick="sipCoffee()" class="px-5 py-2.5 bg-amber-700 hover:bg-amber-800 text-white text-sm font-cute font-bold rounded-xl shadow active:scale-95 transition">
+              😋 Take a Sip
+            </button>
+            <button onclick="resetMachine()" class="px-5 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 text-sm font-cute font-bold rounded-xl border border-stone-300 active:scale-95 transition">
+              🔄 Brew Another
+            </button>
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer / Backroom Info -->
+  <footer class="relative z-10 py-4 text-center text-xs text-[#A8886F] font-medium">
+    Have a cozy and productive work day! Made with ☕ &amp; love.
+  </footer>
+
+  <!-- SCRIPT LOGIC (AUDIO SYNTHESIS & WORKFLOW) -->
+  <script>
+    // Audio Context & State
+    let audioCtx = null;
+    let isSoundOn = true;
+    let isBrewing = false;
+    let hasCup = false;
+    let currentDrink = 'cappuccino';
+
+    // Drink profiles
+    const drinkProfiles = {
+      cappuccino: {
+        name: 'Cappuccino',
+        color: '#4B2A16',
+        frothColor: '#FFF1D6',
+        frothHeight: '38%',
+        fillHeight: '85%',
+        notes: 'Rich espresso, steamed milk & velvety foam'
+      },
+      latte: {
+        name: 'Caffè Latte',
+        color: '#7C482B',
+        frothColor: '#FFF8EB',
+        frothHeight: '20%',
+        fillHeight: '92%',
+        notes: 'Smooth, creamy & delicately sweet'
+      },
+      espresso: {
+        name: 'Espresso',
+        color: '#24130A',
+        frothColor: '#C48243',
+        frothHeight: '12%',
+        fillHeight: '35%',
+        notes: 'Bold, intense single shot with rich golden crema'
+      },
+      americano: {
+        name: 'Americano',
+        color: '#341D10',
+        frothColor: '#A56A3B',
+        frothHeight: '6%',
+        fillHeight: '88%',
+        notes: 'Espresso pulled over crisp hot water'
+      },
+      mocha: {
+        name: 'Hot Mocha',
+        color: '#2B1408',
+        frothColor: '#E6C2A0',
+        frothHeight: '25%',
+        fillHeight: '90%',
+        notes: 'Rich cocoa layered with dark roast and milk'
+      },
+      caramel: {
+        name: 'Caramel Macchiato',
+        color: '#5C3117',
+        frothColor: '#FFE6B3',
+        frothHeight: '30%',
+        fillHeight: '90%',
+        notes: 'Vanilla milk, dark espresso & sweet caramel swirl'
+      }
+    };
+
+    // Initialize Web Audio safely on first user gesture
+    function initAudio() {
+      if (!audioCtx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContext();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function toggleAudio() {
+      isSoundOn = !isSoundOn;
+      const icon = document.getElementById('soundIcon');
+      const text = document.getElementById('soundText');
+      if (isSoundOn) {
+        icon.textContent = '🔊';
+        text.textContent = 'Sound ON';
+        playTone(660, 0.08, 'sine');
+      } else {
+        icon.textContent = '🔇';
+        text.textContent = 'Sound OFF';
+      }
+    }
+
+    // Sound generators for physical feedback
+    function playTone(freq, duration = 0.1, type = 'sine') {
+      if (!isSoundOn) return;
+      initAudio();
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {
+        // Audio error suppression
+      }
+    }
+
+    function playClickSound() {
+      playTone(520, 0.07, 'triangle');
+    }
+
+    function playChime() {
+      if (!isSoundOn) return;
+      initAudio();
+      try {
+        const notes = [523.25, 659.25, 783.99, 1046.50]; // C E G C
+        notes.forEach((freq, idx) => {
+          setTimeout(() => {
+            playTone(freq, 0.4, 'sine');
+          }, idx * 110);
+        });
+      } catch (e) {}
+    }
+
+    // Grinding & Pouring synthesized sounds
+    let grinderNode = null;
+    function startBrewSounds() {
+      if (!isSoundOn) return;
+      initAudio();
+      try {
+        // Low bubbling/pouring white noise filtered
+        const bufferSize = audioCtx.sampleRate * 4;
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = Math.random() * 2 - 1;
+        }
+
+        const noise = audioCtx.createBufferSource();
+        noise.buffer = buffer;
+
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.value = 420;
+        filter.Q.value = 3.0;
+
+        const gain = audioCtx.createGain();
+        gain.gain.setValueAtTime(0.01, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.18, audioCtx.currentTime + 0.8);
+        gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 4.0);
+
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        noise.start();
+        grinderNode = noise;
+      } catch (e) {}
+    }
+
+    // Screen Navigation
+    function goToAskStep() {
+      playClickSound();
+      document.getElementById('stepWelcome').classList.add('hidden');
+      document.getElementById('stepExit').classList.add('hidden');
+      document.getElementById('stepQuestion').classList.remove('hidden');
+    }
+
+    function goToExitStep() {
+      playClickSound();
+      document.getElementById('stepQuestion').classList.add('hidden');
+      document.getElementById('stepExit').classList.remove('hidden');
+    }
+
+    function goToMachineStep() {
+      playClickSound();
+      document.getElementById('stepQuestion').classList.add('hidden');
+      document.getElementById('stepMachine').classList.remove('hidden');
+      selectCoffee('cappuccino');
+      updateUIHelper();
+    }
+
+    // Coffee Machine Beverage Selection
+    function selectCoffee(type) {
+      if (isBrewing) return;
+      playClickSound();
+      currentDrink = type;
+
+      // Update button highlights
+      document.querySelectorAll('.coffee-opt-btn').forEach(btn => {
+        btn.classList.remove('border-amber-500/90', 'bg-amber-950/60');
+        btn.classList.add('border-stone-600', 'bg-stone-800/60');
+      });
+
+      const selectedBtn = document.getElementById(`btn-${type}`);
+      if (selectedBtn) {
+        selectedBtn.classList.remove('border-stone-600', 'bg-stone-800/60');
+        selectedBtn.classList.add('border-amber-500/90', 'bg-amber-950/60');
+      }
+
+      // Update LED display
+      const info = drinkProfiles[type];
+      const led = document.getElementById('ledDisplay');
+      led.innerHTML = `<span class="text-white">${info.name.toUpperCase()}</span> READY`;
+
+      // Update liquid stream colors
+      document.getElementById('stream1').style.backgroundColor = info.color;
+      document.getElementById('stream2').style.backgroundColor = info.color;
+
+      updateUIHelper();
+    }
+
+    // Toggle Mug (Place or Remove)
+    function toggleMug(forceAdd = null) {
+      if (isBrewing) return;
+      playTone(440, 0.08, 'square');
+
+      if (forceAdd !== null) {
+        hasCup = forceAdd;
+      } else {
+        hasCup = !hasCup;
+      }
+
+      const placeholder = document.getElementById('placeholderBtn');
+      const cup = document.getElementById('cupContainer');
+      const actionLabel = document.getElementById('cupActionLabel');
+
+      if (hasCup) {
+        placeholder.classList.add('hidden');
+        cup.classList.remove('hidden');
+        actionLabel.textContent = 'Remove Mug';
+        updateUIHelper();
+      } else {
+        placeholder.classList.remove('hidden');
+        cup.classList.add('hidden');
+        actionLabel.textContent = 'Place Mug';
+        // Reset cup liquid
+        document.getElementById('cupLiquid').style.height = '0%';
+        document.getElementById('steamPuffs').classList.add('hidden');
+        document.getElementById('cupFace').textContent = '(◕‿◕)';
+        updateUIHelper();
+      }
+    }
+
+    function updateUIHelper() {
+      const helper = document.getElementById('instructionText');
+      const startBtn = document.getElementById('startBrewBtn');
+
+      if (!hasCup) {
+        helper.textContent = "Step 1: Put your mug in the dispenser tray!";
+        startBtn.classList.remove('hint-pulse', 'from-emerald-600', 'to-emerald-500');
+        startBtn.classList.add('bg-stone-600', 'text-stone-300');
+      } else {
+        helper.textContent = `Ready! Press "Start Brew" for fresh ${drinkProfiles[currentDrink].name}!`;
+        startBtn.classList.remove('bg-stone-600', 'text-stone-300');
+        startBtn.classList.add('bg-emerald-600', 'hover:bg-emerald-500', 'hint-pulse');
+      }
+    }
+
+    // Start the Brewing Flow
+    function startBrewingProcess() {
+      if (isBrewing) return;
+
+      // Ensure cup is placed first
+      if (!hasCup) {
+        playTone(280, 0.2, 'sawtooth');
+        const helper = document.getElementById('statusInstruction');
+        helper.classList.add('animate-bounce');
+        document.getElementById('instructionText').textContent = "⚠️ Please place a mug under the spout first!";
+        setTimeout(() => helper.classList.remove('animate-bounce'), 1000);
+        return;
+      }
+
+      isBrewing = true;
+      startBrewSounds();
+
+      // UI state updates
+      const led = document.getElementById('ledDisplay');
+      const startBtn = document.getElementById('startBrewBtn');
+      const brewText = document.getElementById('brewBtnText');
+      const stream = document.getElementById('liquidStream');
+      const liquid = document.getElementById('cupLiquid');
+      const froth = document.getElementById('cupFroth');
+      const enjoyBanner = document.getElementById('enjoyBanner');
+
+      enjoyBanner.classList.add('hidden');
+      startBtn.classList.remove('hint-pulse');
+      startBtn.disabled = true;
+      brewText.textContent = "Brewing...";
+      led.innerHTML = `<span class="animate-pulse">⏳ BREWING...</span>`;
+      document.getElementById('instructionText').textContent = `Grinding beans & brewing fresh ${drinkProfiles[currentDrink].name}...`;
+      document.getElementById('cupFace').textContent = '( ^ ‿ ^ )';
+
+      // Setup cup colors based on selection
+      const profile = drinkProfiles[currentDrink];
+      liquid.style.backgroundColor = profile.color;
+      froth.style.backgroundColor = profile.frothColor;
+      froth.style.height = profile.frothHeight;
+
+      // Start stream
+      stream.classList.remove('hidden');
+      stream.classList.add('pour-active');
+
+      // Fill the cup progressively
+      setTimeout(() => {
+        liquid.style.height = profile.fillHeight;
+      }, 300);
+
+      // Finish brewing after 4 seconds
+      setTimeout(() => {
+        stream.classList.remove('pour-active');
+        stream.classList.add('hidden');
+        document.getElementById('steamPuffs').classList.remove('hidden');
+        document.getElementById('cupFace').textContent = '( ´ ▽ ` )b';
+        
+        // Completion Chime
+        playChime();
+
+        led.innerHTML = `<span class="text-emerald-300">✔ ENJOY!</span>`;
+        document.getElementById('instructionText').textContent = `Your ${profile.name} is ready!`;
+
+        // Banner details
+        document.getElementById('bannerTitle').textContent = `Fresh ${profile.name} Served!`;
+        document.getElementById('bannerDesc').textContent = profile.notes;
+        enjoyBanner.classList.remove('hidden');
+
+        // Reset brew button state
+        brewText.textContent = "Start Brew";
+        startBtn.disabled = false;
+        isBrewing = false;
+      }, 4000);
+    }
+
+    // Sip interaction
+    function sipCoffee() {
+      playTone(580, 0.15, 'sine');
+      const face = document.getElementById('cupFace');
+      const liquid = document.getElementById('cupLiquid');
+      face.textContent = '(*´∀`*) ✨';
+
+      // Lower liquid slightly
+      liquid.style.height = '30%';
+
+      const bannerTitle = document.getElementById('bannerTitle');
+      bannerTitle.textContent = "Ahhh, delicious! ☕";
+      setTimeout(() => {
+        bannerTitle.textContent = `Fresh ${drinkProfiles[currentDrink].name} Served!`;
+      }, 2500);
+    }
+
+    // Reset for another cup
+    function resetMachine() {
+      playClickSound();
+      document.getElementById('enjoyBanner').classList.add('hidden');
+      document.getElementById('cupLiquid').style.height = '0%';
+      document.getElementById('steamPuffs').classList.add('hidden');
+      document.getElementById('cupFace').textContent = '(◕‿◕)';
+      document.getElementById('ledDisplay').textContent = '[ READY ] SELECT DRINK';
+      updateUIHelper();
+    }
+  </script>
+</body>
+</html>

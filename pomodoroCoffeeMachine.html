@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cozy Coffee &bull; Pomodoro Café</title>
+  <style>
+    :root {
+      --wood-dark: #3e2719;
+      --wood-top: #694024;
+      --wood-bevel: #845330;
+      --cream-wall: #f4ece2;
+      --accent-warm: #d97736;
+      --led-glow: #38ef7d;
+      --led-bg: #0b1a13;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at 50% 20%, #fdfbf7 0%, #e5dcd3 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      overflow-x: hidden;
+      color: #3b312b;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* Ambient Café Top Bar */
+    .top-bar {
+      position: absolute;
+      top: 18px;
+      width: calc(100% - 40px);
+      max-width: 950px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 50;
+    }
+
+    .cafe-brand {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #533a27;
+      letter-spacing: -0.5px;
+    }
+
+    .audio-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(8px);
+      padding: 8px 16px;
+      border-radius: 30px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+      border: 1px solid rgba(132, 83, 48, 0.15);
+    }
+
+    .audio-btn {
+      background: #eed9c4;
+      border: none;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .audio-btn:hover {
+      background: #dfc2a6;
+      transform: scale(1.05);
+    }
+
+    /* MODAL SCREENS (Start / Exit) */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(43, 30, 22, 0.65);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    .modal-card {
+      background: #fffaf5;
+      border: 2px solid #ecdcd0;
+      border-radius: 20px;
+      padding: 36px 32px;
+      width: 440px;
+      text-align: center;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.25);
+    }
+
+    .modal-card h1 {
+      font-size: 1.8rem;
+      color: #432b1a;
+      margin-bottom: 10px;
+    }
+
+    .modal-card p {
+      font-size: 0.95rem;
+      color: #7d6b5e;
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .btn-warm {
+      background: linear-gradient(180deg, #d97736, #bc5919);
+      border: none;
+      color: #fff;
+      font-weight: 700;
+      padding: 12px 24px;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(217, 119, 54, 0.35);
+      transition: transform 0.15s;
+    }
+
+    .btn-warm:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: #ede3da;
+      border: 1px solid #d8c6b7;
+      color: #695241;
+      font-weight: 600;
+      padding: 12px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    /* MAIN TABLETOP ENVIRONMENT */
+    .scene-container {
+      width: 100%;
+      max-width: 950px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    /* THE WOODEN DESK / TABLE */
+    .wooden-table {
+      width: 100%;
+      height: 280px;
+      background: linear-gradient(180deg, var(--wood-bevel) 0%, var(--wood-top) 8%, var(--wood-dark) 100%);
+      border-radius: 16px 16px 0 0;
+      box-shadow: 0 -8px 24px rgba(0,0,0,0.15), inset 0 2px 2px rgba(255,255,255,0.2);
+      position: relative;
+      display: flex;
+      justify-content: space-around;
+      align-items: flex-end;
+      padding: 0 40px 30px 40px;
+      border-top: 4px solid #a46a41;
+    }
+
+    /* MACHINE SETUP */
+    .machine-wrapper {
+      position: relative;
+      margin-bottom: 10px;
+    }
+
+    .coffee-machine {
+      width: 380px;
+      background: linear-gradient(145deg, #383c44, #1f2227);
+      border-radius: 18px 18px 8px 8px;
+      border: 2px solid #585f6c;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.5), inset 0 2px 3px rgba(255, 255, 255, 0.25);
+      padding: 18px 16px 12px 16px;
+      position: relative;
+    }
+
+    .machine-brand-plate {
+      text-align: center;
+      font-size: 0.65rem;
+      letter-spacing: 2px;
+      color: #9fa7b4;
+      font-weight: 800;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+
+    /* LCD Display & Barometer */
+    .machine-head-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .digital-screen {
+      flex: 1;
+      height: 64px;
+      background: var(--led-bg);
+      border: 2px solid #144933;
+      border-radius: 8px;
+      padding: 6px 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .timer-readout {
+      font-family: 'Courier New', monospace;
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--led-glow);
+      text-shadow: 0 0 8px rgba(56, 239, 125, 0.6);
+      line-height: 1.1;
+    }
+
+    .screen-status {
+      font-family: 'Courier New', monospace;
+      font-size: 0.65rem;
+      color: #21b65e;
+      text-transform: uppercase;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 2px;
+    }
+
+    /* Gauge */
+    .mini-gauge {
+      width: 58px;
+      height: 58px;
+      background: #f0ece1;
+      border: 3px solid #7c8594;
+      border-radius: 50%;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+    }
+
+    .mini-gauge-label {
+      font-size: 6px;
+      font-weight: 900;
+      position: absolute;
+      top: 10px;
+      color: #444;
+    }
+
+    .needle {
+      position: absolute;
+      width: 2px;
+      height: 22px;
+      background: #c53030;
+      bottom: 50%;
+      left: calc(50% - 1px);
+      transform-origin: bottom center;
+      transform: rotate(-120deg);
+      transition: transform 0.5s ease-out;
+    }
+
+    .needle-cap {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: #111;
+      border-radius: 50%;
+    }
+
+    /* Beverage & Duration Controls */
+    .panel-options {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .options-row {
+      display: flex;
+      gap: 6px;
+    }
+
+    .option-btn {
+      flex: 1;
+      padding: 6px 4px;
+      background: #2a2e36;
+      border: 1px solid #434a56;
+      border-radius: 6px;
+      color: #b7c0cc;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+    }
+
+    .option-btn.selected {
+      background: #3e4857;
+      border-color: #38ef7d;
+      color: #38ef7d;
+      box-shadow: 0 0 6px rgba(56, 239, 125, 0.3);
+    }
+
+    /* Main Big Brew Actuator */
+    .brew-switch {
+      width: 100%;
+      padding: 10px;
+      background: linear-gradient(180deg, #d97736, #a8521c);
+      border: 1px solid #eb8d50;
+      border-radius: 8px;
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.4);
+      transition: all 0.15s;
+    }
+
+    .brew-switch:hover:not(:disabled) {
+      filter: brightness(1.1);
+    }
+
+    .brew-switch:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      filter: grayscale(0.8);
+    }
+
+    /* Brewing Bay & Outlet */
+    .brew-chamber {
+      height: 155px;
+      background: radial-gradient(circle at 50% 0%, #1e2126, #0e1012);
+      border-radius: 6px;
+      border: 1px solid #282c33;
+      position: relative;
+      margin-top: 12px;
+      display: flex;
+      justify-content: center;
+      overflow: hidden;
+      box-shadow: inset 0 6px 14px rgba(0,0,0,0.8);
+    }
+
+    .group-outlet {
+      position: absolute;
+      top: 0;
+      width: 60px;
+      height: 20px;
+      background: #4a515d;
+      border-radius: 0 0 8px 8px;
+      border: 1px solid #646d7c;
+      border-top: none;
+      display: flex;
+      justify-content: center;
+    }
+
+    .outlet-nozzle {
+      width: 10px;
+      height: 8px;
+      background: #25282e;
+      position: absolute;
+      bottom: -6px;
+      border-radius: 0 0 3px 3px;
+    }
+
+    /* Coffee Flow Stream */
+    .pour-stream {
+      position: absolute;
+      top: 26px;
+      width: 3px;
+      height: 0;
+      background: linear-gradient(180deg, #421e0a, #733714);
+      border-radius: 2px;
+      opacity: 0;
+      transition: height 0.4s ease, opacity 0.2s ease;
+      z-index: 5;
+    }
+
+    .pour-stream.flowing {
+      height: 60px;
+      opacity: 0.95;
+    }
+
+    /* Target Dropzone under spout */
+    .drop-zone {
+      position: absolute;
+      bottom: 8px;
+      width: 80px;
+      height: 70px;
+      border: 2px dashed rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .drop-zone.drag-over {
+      border-color: #38ef7d;
+      background: rgba(56, 239, 125, 0.1);
+    }
+
+    .drop-hint {
+      font-size: 9px;
+      color: rgba(255, 255, 255, 0.4);
+      text-transform: uppercase;
+      font-weight: 700;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    /* Drip tray grate */
+    .machine-grate {
+      height: 18px;
+      background: repeating-linear-gradient(90deg, #1b1d20, #1b1d20 5px, #3c424c 5px, #3c424c 7px);
+      border-radius: 0 0 8px 8px;
+      border-top: 1px solid #4a515e;
+    }
+
+    /* SIDE TABLE AREA FOR CUP (COASTER) */
+    .coaster-area {
+      width: 120px;
+      height: 110px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      position: relative;
+    }
+
+    .cork-coaster {
+      width: 84px;
+      height: 18px;
+      background: #bfa17c;
+      border-radius: 50%;
+      border: 2px solid #8e6c46;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      position: absolute;
+      bottom: 4px;
+    }
+
+    .side-hint {
+      position: absolute;
+      top: -15px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #dfc2a6;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+      white-space: nowrap;
+    }
+
+    /* DRAGGABLE CERAMIC CUP */
+    .coffee-cup {
+      width: 66px;
+      height: 60px;
+      position: relative;
+      cursor: grab;
+      z-index: 20;
+      transition: transform 0.15s ease;
+    }
+
+    .coffee-cup:active {
+      cursor: grabbing;
+      transform: scale(1.06);
+    }
+
+    .cup-ceramic {
+      width: 66px;
+      height: 56px;
+      background: linear-gradient(135deg, #ffffff 0%, #ded7cc 100%);
+      border-radius: 3px 3px 18px 18px;
+      border: 1px solid #b8b0a2;
+      box-shadow: 0 5px 12px rgba(0,0,0,0.3);
+      position: absolute;
+      bottom: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+
+    .cup-ear {
+      position: absolute;
+      right: -13px;
+      top: 12px;
+      width: 18px;
+      height: 30px;
+      border: 4px solid #eae5de;
+      border-left: none;
+      border-radius: 0 14px 14px 0;
+    }
+
+    /* Inside the cup: Coffee liquid & Crema */
+    .cup-liquid {
+      width: 100%;
+      height: 0%;
+      background: linear-gradient(180deg, #44210a 0%, #1f0f04 100%);
+      transition: height 1s ease;
+      position: relative;
+    }
+
+    .cup-crema {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: linear-gradient(180deg, #d39a58, #925821);
+      opacity: 0;
+      transition: opacity 0.8s ease;
+    }
+
+    /* Rising steam */
+    .steam-vapor {
+      position: absolute;
+      top: -24px;
+      left: 20px;
+      width: 24px;
+      height: 24px;
+      background: rgba(255, 255, 255, 0.45);
+      filter: blur(10px);
+      border-radius: 50%;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    @keyframes steamDrift {
+      0% { transform: translateY(0) scale(0.9); opacity: 0.6; }
+      100% { transform: translateY(-50px) scale(2.2); opacity: 0; }
+    }
+
+    .steaming {
+      animation: steamDrift 2.2s infinite ease-out;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient Audio & Branding Header -->
+  <div class="top-bar">
+    <div class="cafe-brand">☕ Breakroom Focus Café</div>
+    <div class="audio-controls">
+      <span style="font-size: 0.8rem; font-weight: 600; color: #5a4231;">Lo-Fi Ambience:</span>
+      <button id="btn-ambient" class="audio-btn" title="Toggle Lo-Fi Piano & Soft Rain">▶</button>
+    </div>
+  </div>
+
+  <!-- STEP 1: WELCOME SCREEN DIALOG -->
+  <div id="modal-intro" class="modal-overlay">
+    <div class="modal-card">
+      <h1>Brew Coffee Today?</h1>
+      <p>Set up your work session. Select your favorite roast, drag your mug under the machine, and let your coffee brew while you focus.</p>
+      <div class="btn-group">
+        <button id="btn-enter-cafe" class="btn-warm">Brew Coffee</button>
+        <button id="btn-exit-app" class="btn-secondary">Exit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXIT SCREEN -->
+  <div id="modal-exit" class="modal-overlay hidden">
+    <div class="modal-card">
+      <h1>See You Later!</h1>
+      <p>The coffee machine is in energy-saving standby mode.</p>
+      <button id="btn-back-to-cafe" class="btn-secondary">Re-enter Breakroom</button>
+    </div>
+  </div>
+
+  <!-- MAIN SCENE -->
+  <div class="scene-container">
+    
+    <!-- WOODEN TABLETOP -->
+    <div class="wooden-table">
+
+      <!-- THE COMMERCIAL COFFEE MACHINE -->
+      <div class="machine-wrapper">
+        <div class="coffee-machine">
+          <div class="machine-brand-plate">Officina &bull; Commercial Pomodoro</div>
+          
+          <!-- Screen & Pressure Gauge -->
+          <div class="machine-head-row">
+            <div class="digital-screen">
+              <div id="lcd-timer" class="timer-readout">25:00</div>
+              <div id="lcd-msg" class="screen-status">PLACE CUP TO COMMENCE</div>
+            </div>
+
+            <div class="mini-gauge" title="Pressure (Bar)">
+              <div class="mini-gauge-label">BAR</div>
+              <div id="gauge-needle" class="needle"></div>
+              <div class="needle-cap"></div>
+            </div>
+          </div>
+
+          <!-- Coffee Beverage & Focus Session Selection -->
+          <div class="panel-options">
+            <!-- Drinks -->
+            <div class="options-row">
+              <button class="option-btn selected" data-type="drink" data-val="Cappuccino">Cappuccino</button>
+              <button class="option-btn" data-type="drink" data-val="Espresso">Espresso</button>
+              <button class="option-btn" data-type="drink" data-val="Latte">Caffè Latte</button>
+              <button class="option-btn" data-type="drink" data-val="Mocha">Hot Mocha</button>
+            </div>
+            <!-- Pomodoro Session Durations -->
+            <div class="options-row">
+              <button class="option-btn selected" data-type="time" data-seconds="1500">25 Min (Pomodoro)</button>
+              <button class="option-btn" data-type="time" data-seconds="300">5 Min (Break)</button>
+              <button class="option-btn" data-type="time" data-seconds="10" title="Quick testing preview">10s (Demo)</button>
+            </div>
+          </div>
+
+          <!-- Start Brewing Button -->
+          <button id="btn-brew" class="brew-switch" disabled>Place Cup on Tray First</button>
+
+          <!-- Group Head / Outlet Chamber -->
+          <div class="brew-chamber">
+            <div class="group-outlet">
+              <div class="outlet-nozzle"></div>
+            </div>
+
+            <div id="pour-stream" class="pour-stream"></div>
+
+            <!-- Drag Drop Target Zone -->
+            <div id="drop-zone" class="drop-zone">
+              <span id="drop-hint" class="drop-hint">Drop Mug<br>Here</span>
+            </div>
+          </div>
+
+          <div class="machine-grate"></div>
+        </div>
+      </div>
+
+      <!-- SIDE COASTER (Cup Home Spot) -->
+      <div id="coaster-area" class="coaster-area">
+        <div id="coaster-hint" class="side-hint">Drag Cup to Machine ➔</div>
+        <div class="cork-coaster"></div>
+
+        <!-- THE DRAGGABLE CUP -->
+        <div id="cup-drag" class="coffee-cup" draggable="true" title="Drag me to the coffee machine!">
+          <div class="cup-ceramic">
+            <div id="cup-liquid" class="cup-liquid">
+              <div id="cup-crema" class="cup-crema"></div>
+            </div>
+          </div>
+          <div class="cup-ear"></div>
+          <div id="steam-vapor" class="steam-vapor"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // 1. SOUND SYSTEM: Synthesized Ambient Lo-Fi & Brew FX (No external audio files)
+    // =========================================================================
+    class AmbientSoundSystem {
+      static audioCtx = null;
+      static isPlaying = false;
+      static timerLoop = null;
+
+      static init() {
+        if (!this.audioCtx) {
+          this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (this.audioCtx.state === 'suspended') {
+          this.audioCtx.resume();
+        }
+      }
+
+      static toggleLoFiMusic(btnEl) {
+        this.init();
+        if (this.isPlaying) {
+          clearInterval(this.timerLoop);
+          this.isPlaying = false;
+          btnEl.textContent = '▶';
+          return;
+        }
+
+        this.isPlaying = true;
+        btnEl.textContent = '⏸';
+
+        // Play relaxing ambient pentatonic chords in an endless gentle loop
+        const chords = [
+          [261.63, 329.63, 392.00, 493.88], // Cmaj7
+          [220.00, 261.63, 329.63, 392.00], // Am7
+          [174.61, 220.00, 261.63, 329.63], // Fmaj7
+          [196.00, 246.94, 293.66, 349.23]  // G7
+        ];
+        let step = 0;
+
+        const playChord = () => {
+          if (!this.isPlaying) return;
+          const currentChord = chords[step % chords.length];
+          currentChord.forEach(freq => {
+            const osc = this.audioCtx.createOscillator();
+            const gain = this.audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, this.audioCtx.currentTime);
+
+            gain.gain.setValueAtTime(0.015, this.audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.0001, this.audioCtx.currentTime + 3.2);
+
+            osc.connect(gain);
+            gain.connect(this.audioCtx.destination);
+            osc.start();
+            osc.stop(this.audioCtx.currentTime + 3.2);
+          });
+          step++;
+        };
+
+        playChord();
+        this.timerLoop = setInterval(playChord, 3500);
+      }
+
+      static playPlink() {
+        this.init();
+        const osc = this.audioCtx.createOscillator();
+        const gain = this.audioCtx.createGain();
+        osc.frequency.setValueAtTime(450, this.audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(150, this.audioCtx.currentTime + 0.08);
+        gain.gain.setValueAtTime(0.15, this.audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + 0.08);
+        osc.connect(gain);
+        gain.connect(this.audioCtx.destination);
+        osc.start();
+        osc.stop(this.audioCtx.currentTime + 0.08);
+      }
+
+      static playBrewingHiss() {
+        this.init();
+        const osc = this.audioCtx.createOscillator();
+        const gain = this.audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(90, this.audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.05, this.audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(0, this.audioCtx.currentTime + 2.5);
+        osc.connect(gain);
+        gain.connect(this.audioCtx.destination);
+        osc.start();
+        osc.stop(this.audioCtx.currentTime + 2.5);
+      }
+
+      static playChime() {
+        this.init();
+        [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+          const osc = this.audioCtx.createOscillator();
+          const gain = this.audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.value = freq;
+          const start = this.audioCtx.currentTime + (i * 0.12);
+          gain.gain.setValueAtTime(0.15, start);
+          gain.gain.exponentialRampToValueAtTime(0.001, start + 0.7);
+          osc.connect(gain);
+          gain.connect(this.audioCtx.destination);
+          osc.start(start);
+          osc.stop(start + 0.7);
+        });
+      }
+    }
+
+    // =========================================================================
+    // 2. OOP ABSTRACTION (Simulated Abstract Base + Concrete Coffee Machine)
+    // =========================================================================
+
+    class BaseBrewingAppliance {
+      constructor(make) {
+        if (this.constructor === BaseBrewingAppliance) {
+          throw new Error("Abstract class 'BaseBrewingAppliance' cannot be instantiated directly.");
+        }
+        this.make = make;
+      }
+      makeCoffee(type, durationSeconds) {
+        throw new Error("Abstract method 'makeCoffee()' must be implemented.");
+      }
+    }
+
+    class PomodoroCoffeeMachine extends BaseBrewingAppliance {
+      // Private fields: Completely encapsulated
+      #waterAmount = 1000;
+      #coffeeBeans = 250;
+      #isTimerRunning = false;
+      #timerId = null;
+      #remainingSeconds = 1500;
+      #uiCallbacks = null;
+
+      constructor(uiCallbacks) {
+        super("Officina Commercial");
+        this.#uiCallbacks = uiCallbacks;
+      }
+
+      // Public Interface: Clean invocation without exposing timer or boiler loops
+      startSession(drinkType, seconds) {
+        console.log(`[Abstraction] Starting Pomodoro Session: ${drinkType} for ${seconds}s`);
+        if (this.#isTimerRunning) return false;
+
+        this.#remainingSeconds = seconds;
+        this.#isTimerRunning = true;
+        this.#uiCallbacks.onStatusChange("FOCUSING...", 8);
+
+        // Deduct resources safely inside private scope
+        this.#waterAmount -= 60;
+        this.#coffeeBeans -= 18;
+
+        this.#runPomodoroCountdown(drinkType, seconds);
+        return true;
+      }
+
+      // Public inspection getter
+      get checkResources() {
+        return {
+          water: `${this.#waterAmount}ml`,
+          beans: `${this.#coffeeBeans}g`,
+          running: this.#isTimerRunning
+        };
+      }
+
+      // Private Methods: Countdown & Serving routine
+      #runPomodoroCountdown(drinkType, totalSeconds) {
+        this.#timerId = setInterval(() => {
+          this.#remainingSeconds--;
+          const mins = String(Math.floor(this.#remainingSeconds / 60)).padStart(2, '0');
+          const secs = String(this.#remainingSeconds % 60).padStart(2, '0');
+          this.#uiCallbacks.onTick(`${mins}:${secs}`, (this.#remainingSeconds / totalSeconds));
+
+          // In the last 4 seconds, activate realistic extraction
+          if (this.#remainingSeconds === 4) {
+            this.#extractAndServe(drinkType);
+          }
+
+          if (this.#remainingSeconds <= 0) {
+            clearInterval(this.#timerId);
+            this.#isTimerRunning = false;
+            this.#uiCallbacks.onComplete(drinkType);
+          }
+        }, 1000);
+      }
+
+      #extractAndServe(drinkType) {
+        this.#uiCallbacks.onExtractionStart(drinkType);
+        AmbientSoundSystem.playBrewingHiss();
+      }
+    }
+
+    // =========================================================================
+    // 3. UI CONTROLLER & DRAG-AND-DROP INTERACTIONS
+    // =========================================================================
+
+    const modalIntro = document.getElementById("modal-intro");
+    const modalExit = document.getElementById("modal-exit");
+    const btnAmbient = document.getElementById("btn-ambient");
+
+    const lcdTimer = document.getElementById("lcd-timer");
+    const lcdMsg = document.getElementById("lcd-msg");
+    const gaugeNeedle = document.getElementById("gauge-needle");
+    const brewBtn = document.getElementById("btn-brew");
+
+    const cupDrag = document.getElementById("cup-drag");
+    const dropZone = document.getElementById("drop-zone");
+    const dropHint = document.getElementById("drop-hint");
+    const coasterArea = document.getElementById("coaster-area");
+    const coasterHint = document.getElementById("coaster-hint");
+
+    const pourStream = document.getElementById("pour-stream");
+    const cupLiquid = document.getElementById("cup-liquid");
+    const cupCrema = document.getElementById("cup-crema");
+    const steamVapor = document.getElementById("steam-vapor");
+
+    let isCupInMachine = false;
+    let selectedDrink = "Cappuccino";
+    let selectedSeconds = 1500;
+    let isBrewFinished = false;
+
+    // Instantiate Machine via OOP Abstraction
+    const machine = new PomodoroCoffeeMachine({
+      onTick: (timeStr, ratio) => {
+        lcdTimer.textContent = timeStr;
+      },
+      onStatusChange: (statusText, barPressure) => {
+        lcdMsg.textContent = statusText;
+        const deg = -120 + (barPressure * 12);
+        gaugeNeedle.style.transform = `rotate(${deg}deg)`;
+      },
+      onExtractionStart: (drinkType) => {
+        lcdMsg.textContent = `BREWING FRESH ${drinkType.toUpperCase()}`;
+        pourStream.classList.add("flowing");
+        cupLiquid.style.height = "80%";
+        setTimeout(() => {
+          pourStream.classList.remove("flowing");
+          cupCrema.style.opacity = "1";
+          steamVapor.classList.add("steaming");
+        }, 3200);
+      },
+      onComplete: (drinkType) => {
+        lcdMsg.textContent = `${drinkType.toUpperCase()} READY &bull; SIP`;
+        gaugeNeedle.style.transform = `rotate(-120deg)`;
+        AmbientSoundSystem.playChime();
+        isBrewFinished = true;
+        brewBtn.textContent = "Session Complete";
+      }
+    });
+
+    // Navigation Modals
+    document.getElementById("btn-enter-cafe").addEventListener("click", () => {
+      AmbientSoundSystem.playPlink();
+      modalIntro.classList.add("hidden");
+    });
+
+    document.getElementById("btn-exit-app").addEventListener("click", () => {
+      AmbientSoundSystem.playPlink();
+      modalIntro.classList.add("hidden");
+      modalExit.classList.remove("hidden");
+    });
+
+    document.getElementById("btn-back-to-cafe").addEventListener("click", () => {
+      AmbientSoundSystem.playPlink();
+      modalExit.classList.add("hidden");
+      modalIntro.classList.remove("hidden");
+    });
+
+    btnAmbient.addEventListener("click", () => {
+      AmbientSoundSystem.toggleLoFiMusic(btnAmbient);
+    });
+
+    // Button Selection (Drink & Duration)
+    document.querySelectorAll(".option-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        AmbientSoundSystem.playPlink();
+        const type = btn.getAttribute("data-type");
+        document.querySelectorAll(`.option-btn[data-type="${type}"]`).forEach(b => b.classList.remove("selected"));
+        btn.classList.add("selected");
+
+        if (type === "drink") {
+          selectedDrink = btn.getAttribute("data-val");
+        } else if (type === "time") {
+          selectedSeconds = parseInt(btn.getAttribute("data-seconds"), 10);
+          const mins = String(Math.floor(selectedSeconds / 60)).padStart(2, '0');
+          const secs = String(selectedSeconds % 60).padStart(2, '0');
+          lcdTimer.textContent = `${mins}:${secs}`;
+        }
+      });
+    });
+
+    // Drag and Drop Logic
+    cupDrag.addEventListener("dragstart", (e) => {
+      e.dataTransfer.setData("text/plain", "coffee-cup");
+    });
+
+    dropZone.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      dropZone.classList.add("drag-over");
+    });
+
+    dropZone.addEventListener("dragleave", () => {
+      dropZone.classList.remove("drag-over");
+    });
+
+    dropZone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      dropZone.classList.remove("drag-over");
+
+      // Place cup into machine chamber
+      dropZone.appendChild(cupDrag);
+      dropHint.classList.add("hidden");
+      coasterHint.classList.add("hidden");
+      isCupInMachine = true;
+      AmbientSoundSystem.playPlink();
+
+      brewBtn.disabled = false;
+      brewBtn.textContent = `Start ${selectedDrink} Session`;
+      lcdMsg.textContent = "READY &bull; HIT BREW SWITCH";
+    });
+
+    // Allow dragging cup back to coaster after brewing
+    coasterArea.addEventListener("dragover", (e) => {
+      e.preventDefault();
+    });
+
+    coasterArea.addEventListener("drop", (e) => {
+      e.preventDefault();
+      coasterArea.appendChild(cupDrag);
+      dropHint.classList.remove("hidden");
+      isCupInMachine = false;
+      AmbientSoundSystem.playPlink();
+      if (!isBrewFinished) {
+        brewBtn.disabled = true;
+        brewBtn.textContent = "Place Cup on Tray First";
+        lcdMsg.textContent = "PLACE CUP TO COMMENCE";
+      }
+    });
+
+    // Click cup to drink & reset
+    cupDrag.addEventListener("click", () => {
+      if (!isBrewFinished) return;
+      AmbientSoundSystem.playPlink();
+      cupLiquid.style.height = "0%";
+      cupCrema.style.opacity = "0";
+      steamVapor.classList.remove("steaming");
+      isBrewFinished = false;
+      brewBtn.disabled = false;
+      brewBtn.textContent = `Start New ${selectedDrink} Session`;
+      lcdMsg.textContent = "ENJOYED! READY FOR NEXT CYCLE";
+    });
+
+    // Actuate Brewing Session
+    brewBtn.addEventListener("click", () => {
+      if (!isCupInMachine) return;
+      AmbientSoundSystem.playPlink();
+      brewBtn.disabled = true;
+      brewBtn.textContent = "Focusing & Brewing...";
+      // Start Pomodoro countdown via public abstraction method
+      machine.startSession(selectedDrink, selectedSeconds);
+    });
+  </script>
+</body>
+</html>
