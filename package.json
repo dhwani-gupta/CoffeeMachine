@@ -3,7 +3,7 @@
   "private": true,
   "version": "2.0.0",
   "type": "module",
-  "description": "A cozy pomodoro focus desk with a virtual espresso machine.",
+  "description": "A barista-style pomodoro café with a commercial espresso machine, wall cups, and coffee-sipping breaks.",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",

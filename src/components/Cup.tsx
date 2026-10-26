@@ -35,14 +35,20 @@ export function Cup({
   const fillPercent = Math.min(100, Math.max(0, fill * 100));
   const liquidPercent = Math.min(92, fillPercent * 0.86);
   const sipsLeft = Math.max(0, Math.ceil(fill / (1 / SIPS_PER_CUP)));
+  const sippable = serving && fillPercent > 0;
+  const movable = !locked && !disabled;
+  const interactive = sippable || movable;
+  const showSteam = (steaming || finished) && fillPercent > 0;
 
-  const label = disabled
-    ? "The mug stays put while the timer runs."
-    : serving && fillPercent > 0
-      ? `Your ${drink.name} — ${sipsLeft} ${sipsLeft === 1 ? "sip" : "sips"} left. Tap for a sip.`
-      : spot === "tray"
-        ? "Mug on the machine tray. Tap to return it to the coaster."
-        : "Mug on the coaster. Tap to load it onto the machine.";
+  const label = sippable
+    ? `Your ${drink.name} — ${sipsLeft} ${sipsLeft === 1 ? "sip" : "sips"} left. Tap for a sip.`
+    : disabled
+      ? "The mug stays put while the timer runs."
+      : locked
+        ? "The cup is empty — enjoy the rest of the break."
+        : spot === "tray"
+          ? "Mug on the machine tray. Tap to return it to the coaster."
+          : "Mug on the coaster. Tap to load it onto the machine.";
 
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.key === "Enter" || event.key === " ") {
@@ -54,17 +60,17 @@ export function Cup({
   return (
     <div
       className={`cup cup--${spot}${locked ? " is-locked" : ""}${
-        disabled ? " is-disabled" : ""
-      }${serving ? " is-ready" : ""}${serving && fillPercent > 0 ? " is-sippable" : ""}`}
+        interactive ? "" : " is-disabled"
+      }${serving && fillPercent > 0 ? " is-ready" : ""}${sippable ? " is-sippable" : ""}`}
       role="button"
-      tabIndex={disabled ? -1 : 0}
-      aria-disabled={disabled}
+      tabIndex={interactive ? 0 : -1}
+      aria-disabled={!interactive}
       aria-label={label}
       title={label}
-      draggable={!locked}
+      draggable={movable}
       onDragStart={onDragStart}
-      onClick={onActivate}
-      onKeyDown={handleKeyDown}
+      onClick={interactive ? onActivate : undefined}
+      onKeyDown={interactive ? handleKeyDown : undefined}
       style={
         {
           ...cupStyleVars(cupStyle),
@@ -91,8 +97,8 @@ export function Cup({
       </div>
 
       <div
-        className={`cup-steam${steaming || finished ? " is-on" : ""}${
-          finished ? " is-finished" : ""
+        className={`cup-steam${showSteam ? " is-on" : ""}${
+          finished && fillPercent > 0 ? " is-finished" : ""
         }`}
         aria-hidden="true"
       >

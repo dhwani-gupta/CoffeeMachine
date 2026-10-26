@@ -238,6 +238,13 @@
   text-align: center;
 }
 
+/* Keep the mug wall centred over the machine in the three-column tabletop. */
+@media (min-width: 1081px) {
+  .cup-rack {
+    transform: translateX(-40px);
+  }
+}
+
 /* -------------------------------------------------------------------- table */
 .table {
   position: relative;

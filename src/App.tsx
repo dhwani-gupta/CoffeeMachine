@@ -491,6 +491,7 @@ export default function App() {
         target?.isContentEditable === true;
 
       if (typing) return;
+      if (event.defaultPrevented) return;
 
       if (event.key === "Escape") {
         setHelpOpen(false);
@@ -515,7 +516,13 @@ export default function App() {
       }
 
       if (event.code === "Space" && screen === "desk" && !helpOpen) {
-        if (tag === "BUTTON" || tag === "A") return;
+        if (
+          tag === "BUTTON" ||
+          tag === "A" ||
+          target?.closest('[role="button"]')
+        ) {
+          return;
+        }
         event.preventDefault();
         primaryRef.current();
       }
