@@ -1,13 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { DragEvent } from "react";
 import { sound } from "./audio/AmbientSoundSystem";
-import { ClockStation } from "./components/ClockStation";
-import { CoasterStation } from "./components/CoasterStation";
-import { CupRack } from "./components/CupRack";
-import { EspressoMachine } from "./components/EspressoMachine";
 import { ExitDialog } from "./components/ExitDialog";
+import { FocusCard } from "./components/FocusCard";
 import { HelpDialog } from "./components/HelpDialog";
-import { OrderPad } from "./components/OrderPad";
+import { OrderTicket } from "./components/OrderTicket";
+import { ServiceTicker } from "./components/ServiceTicker";
 import { TopBar } from "./components/TopBar";
 import { WelcomeDialog } from "./components/WelcomeDialog";
 import {
@@ -26,8 +23,9 @@ import {
 } from "./data/cafe";
 import type { DurationPreset } from "./data/cafe";
 import { usePomodoroMachine } from "./hooks/usePomodoroMachine";
-import { clamp, formatClock, formatDuration } from "./lib/format";
+import { clamp, formatClock } from "./lib/format";
 import { readStored, writeStored } from "./lib/storage";
+import { CafeScene } from "./three/CafeScene";
 import type {
   CupId,
   CupSpot,
@@ -146,6 +144,8 @@ export default function App() {
   );
   const [musicPlaying, setMusicPlaying] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
+  const [orderOpen, setOrderOpen] = useState(false);
+  const shellRef = useRef<HTMLDivElement | null>(null);
 
   const drink = DRINK_MAP[drinkId];
   const cupStyle = CUP_MAP[cupId];
@@ -169,12 +169,7 @@ export default function App() {
   const { snapshot } = machine;
 
   const busy = snapshot.phase === "running" || snapshot.phase === "paused";
-  const focusBusy = snapshot.mode === "focus" && busy;
   const breakActive = snapshot.mode === "break" && busy;
-  const focusComplete =
-    snapshot.mode === "focus" && snapshot.phase === "complete";
-  const breakComplete =
-    snapshot.mode === "break" && snapshot.phase === "complete";
   const cupEditable = !busy && !coffeeReady;
   const drinkLocked = busy || coffeeReady;
   const focusLocked = busy || coffeeReady;
@@ -219,23 +214,49 @@ export default function App() {
     sound.setMuted(muted);
   }, [muted]);
 
+  /* ------------------------------------------------------------- scene depth */
+  useEffect(() => {
+    const node = shellRef.current;
+    if (!node) return;
+    if (!window.matchMedia("(pointer: fine)").matches) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    let frame = 0;
+    const handlePointerMove = (event: PointerEvent) => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        const x = (event.clientX / window.innerWidth - 0.5) * 2;
+        const y = (event.clientY / window.innerHeight - 0.5) * 2;
+        node.style.setProperty("--scene-x", x.toFixed(3));
+        node.style.setProperty("--scene-y", y.toFixed(3));
+      });
+    };
+
+    window.addEventListener("pointermove", handlePointerMove, { passive: true });
+    return () => {
+      window.removeEventListener("pointermove", handlePointerMove);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, []);
+
   /* ------------------------------------------------------------------ title */
   const timeLabel = formatClock(snapshot.remainingMs);
   useEffect(() => {
     if (snapshot.mode === "break") {
       document.title =
         snapshot.phase === "running" || snapshot.phase === "paused"
-          ? `${timeLabel} · Break — Cozy Coffee`
-          : "Break complete · Cozy Coffee";
+          ? `${timeLabel} · Break — Breakroom`
+          : "Break complete · Breakroom";
       return;
     }
 
     if (snapshot.phase === "running" || snapshot.phase === "paused") {
-      document.title = `${timeLabel} · ${drink.name} — Cozy Coffee`;
+      document.title = `${timeLabel} · ${drink.name} — Breakroom`;
       return;
     }
 
-    document.title = "Cozy Coffee · Pomodoro Focus Café";
+    document.title = "Breakroom · Pomodoro Café";
   }, [snapshot.mode, snapshot.phase, timeLabel, drink.name]);
 
   /* -------------------------------------------------------- service messages */
@@ -249,6 +270,29 @@ export default function App() {
     return () => window.clearInterval(timer);
   }, [snapshot.mode, snapshot.phase]);
 
+  /* --------------------------------------------------------- pouring puffs */
+  useEffect(() => {
+    if (
+      snapshot.mode !== "focus" ||
+      snapshot.phase !== "running" ||
+      cupSpot !== "tray"
+    ) {
+      return;
+    }
+
+    let puffs = 0;
+    const timer = window.setInterval(() => {
+      if (puffs >= 3) {
+        window.clearInterval(timer);
+        return;
+      }
+      puffs += 1;
+      sound.playPourPuff();
+    }, 14000);
+
+    return () => window.clearInterval(timer);
+  }, [snapshot.mode, snapshot.phase, cupSpot]);
+
   /* --------------------------------------------------------------- handlers */
   const handleToggleMute = useCallback(() => {
     const next = !muted;
@@ -261,14 +305,6 @@ export default function App() {
     setMusicPlaying(sound.toggleMusic());
   }, []);
 
-  const handleStartBreak = useCallback(() => {
-    if (snapshot.mode !== "focus" || snapshot.phase !== "complete") return;
-    sound.playClick();
-    setCupSpot("tray");
-    setServiceIndex(0);
-    machine.startBreak(breakDurationMs);
-  }, [snapshot.mode, snapshot.phase, breakDurationMs, machine]);
-
   const handleSip = useCallback(() => {
     if (!coffeeReady || coffeeLevel <= 0) return;
     sound.playSip();
@@ -279,6 +315,7 @@ export default function App() {
 
   const handlePrimary = useCallback(() => {
     if (screen !== "desk") return;
+    setOrderOpen(false);
 
     if (snapshot.phase === "running") {
       sound.playClick();
@@ -311,6 +348,7 @@ export default function App() {
     setCoffeeLevel(0);
     setServiceIndex(0);
     machine.startFocus(drinkId, focusDurationMs);
+    sound.playPourPuff();
   }, [
     screen,
     snapshot,
@@ -339,30 +377,6 @@ export default function App() {
     sound.playPlaceCup();
     setCupSpot((spot) => (spot === "tray" ? "coaster" : "tray"));
   }, [coffeeReady, coffeeLevel, busy, handleSip]);
-
-  const handleCupDragStart = useCallback(
-    (event: DragEvent<HTMLDivElement>) => {
-      if (busy) {
-        event.preventDefault();
-        return;
-      }
-      event.dataTransfer.setData("text/plain", "mug");
-      event.dataTransfer.effectAllowed = "move";
-    },
-    [busy],
-  );
-
-  const handleDropOnTray = useCallback(() => {
-    if (busy || cupSpot === "tray") return;
-    sound.playPlaceCup();
-    setCupSpot("tray");
-  }, [busy, cupSpot]);
-
-  const handleDropOnCoaster = useCallback(() => {
-    if (busy || cupSpot === "coaster") return;
-    sound.playPlaceCup();
-    setCupSpot("coaster");
-  }, [busy, cupSpot]);
 
   const handleSelectCup = useCallback(
     (nextCup: CupId) => {
@@ -532,11 +546,8 @@ export default function App() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [screen, helpOpen, handleToggleMute]);
 
-  const stopLabel =
-    snapshot.mode === "break" && busy ? "End break" : "Stop focus";
-
   return (
-    <div className="app-shell" data-screen={screen}>
+    <div className="app-shell" data-screen={screen} ref={shellRef}>
       <TopBar
         sessions={sessions}
         muted={muted}
@@ -546,149 +557,86 @@ export default function App() {
         onOpenHelp={handleOpenHelp}
       />
 
-      <main className="scene">
-        <div className="wall-zone">
-          <CupRack
-            selectedCupId={cupId}
-            disabled={!cupEditable}
-            onSelect={handleSelectCup}
+      <div className="cafe-scene" aria-hidden="true">
+        <CafeScene
+          snapshot={snapshot}
+          drink={drink}
+          cupStyle={cupStyle}
+          cupId={cupId}
+          cupSpot={cupSpot}
+          fill={fill}
+          coffeeReady={coffeeReady}
+          cupEditable={cupEditable}
+          serviceMessage={serviceMessage}
+          onSelectCup={handleSelectCup}
+          onCupActivate={handleCupActivate}
+        />
+      </div>
+      <div className="cafe-vignette" aria-hidden="true" />
+      <div className="cafe-grain" aria-hidden="true" />
+
+      {screen === "desk" ? (
+        <>
+          <FocusCard
+            snapshot={snapshot}
+            drink={drink}
+            cupStyle={cupStyle}
+            focusDurationMs={focusDurationMs}
+            breakDurationMs={breakDurationMs}
+            sessions={sessions}
+            cupSpot={cupSpot}
+            coffeeLevel={coffeeLevel}
+            serviceMessage={serviceMessage}
+            onPrimary={handlePrimary}
+            onStop={handleStop}
+            onSip={handleSip}
+            onExtendBreak={handleExtendBreak}
+            onOpenOrder={() => setOrderOpen(true)}
           />
-        </div>
 
-        <div className="table">
-          <div className="tabletop">
-            <ClockStation
-              snapshot={snapshot}
-              focusDurationMs={focusDurationMs}
-              sessions={sessions}
-            />
+          <OrderTicket
+            snapshot={snapshot}
+            drink={drink}
+            cupStyle={cupStyle}
+            cupId={cupId}
+            focusDurationMs={focusDurationMs}
+            focusPresetId={focusPresetId}
+            focusCustomInput={focusCustomInput}
+            focusLocked={focusLocked}
+            breakDurationMs={breakDurationMs}
+            breakPresetId={breakPresetId}
+            breakCustomInput={breakCustomInput}
+            breakLocked={breakLocked}
+            drinkLocked={drinkLocked}
+            cupLocked={!cupEditable}
+            isOpen={orderOpen}
+            onClose={() => setOrderOpen(false)}
+            onSelectDrink={handleSelectDrink}
+            onSelectCup={handleSelectCup}
+            onSelectFocusPreset={handleSelectFocusPreset}
+            onFocusCustomChange={handleFocusCustomChange}
+            onApplyFocusCustom={handleApplyFocusCustom}
+            onSelectBreakPreset={handleSelectBreakPreset}
+            onBreakCustomChange={handleBreakCustomChange}
+            onApplyBreakCustom={handleApplyBreakCustom}
+          />
 
-            <EspressoMachine
-              snapshot={snapshot}
-              drink={drink}
-              cupStyle={cupStyle}
-              coffeeReady={coffeeReady}
-              fill={fill}
-              serviceMessage={serviceMessage}
-              cupSpot={cupSpot}
-              cupLocked={busy}
-              cupDisabled={focusBusy}
-              onCupActivate={handleCupActivate}
-              onCupDragStart={handleCupDragStart}
-              onTrayDrop={handleDropOnTray}
-            />
+          <ServiceTicker
+            snapshot={snapshot}
+            drink={drink}
+            serviceMessage={serviceMessage}
+            coffeeLevel={coffeeLevel}
+          />
 
-            <OrderPad
-              snapshot={snapshot}
-              drink={drink}
-              cupStyle={cupStyle}
-              focusDurationMs={focusDurationMs}
-              focusPresetId={focusPresetId}
-              focusCustomInput={focusCustomInput}
-              focusLocked={focusLocked}
-              breakDurationMs={breakDurationMs}
-              breakPresetId={breakPresetId}
-              breakCustomInput={breakCustomInput}
-              breakLocked={breakLocked}
-              drinkLocked={drinkLocked}
-              cupSpot={cupSpot}
-              coffeeLevel={coffeeLevel}
-              serviceMessage={serviceMessage}
-              stopLabel={stopLabel}
-              stopDisabled={!busy}
-              onSelectDrink={handleSelectDrink}
-              onSelectFocusPreset={handleSelectFocusPreset}
-              onFocusCustomChange={handleFocusCustomChange}
-              onApplyFocusCustom={handleApplyFocusCustom}
-              onSelectBreakPreset={handleSelectBreakPreset}
-              onBreakCustomChange={handleBreakCustomChange}
-              onApplyBreakCustom={handleApplyBreakCustom}
-              onPrimary={handlePrimary}
-              onStop={handleStop}
-              onSip={handleSip}
-              onExtendBreak={handleExtendBreak}
-            />
-
-            <CoasterStation
-              drink={drink}
-              cupStyle={cupStyle}
-              snapshot={snapshot}
-              cupSpot={cupSpot}
-              fill={fill}
-              locked={busy}
-              disabled={focusBusy}
-              coffeeReady={coffeeReady}
-              onCupActivate={handleCupActivate}
-              onCupDragStart={handleCupDragStart}
-              onDropCup={handleDropOnCoaster}
-            />
-          </div>
-
-          <div className="table-apron" aria-hidden="true">
-            <span className="table-apron__edge" />
-            <span className="table-apron__leg table-apron__leg--left" />
-            <span className="table-apron__leg table-apron__leg--right" />
-          </div>
-        </div>
-      </main>
-
-      <footer className="hints-bar">
-        <span className="hint">
-          <kbd>Space</kbd> start / pause
-        </span>
-        <span className="hint">
-          <kbd>S</kbd> sip
-        </span>
-        <span className="hint">
-          <kbd>M</kbd> mute
-        </span>
-        <span className="hint">
-          <kbd>?</kbd> shortcuts
-        </span>
-        <span className="hint hint--soft">
-          Tap a wall cup to choose it — sip during break
-        </span>
-      </footer>
-
-      {focusComplete && coffeeReady && screen === "desk" ? (
-        <div className="ready-toast ready-toast--coffee" role="status" aria-live="polite">
-          <span className="ready-toast__dot" aria-hidden="true" />
-          <p>
-            <strong>Your {drink.name} is served.</strong> Start your{" "}
-            {formatDuration(breakDurationMs)} break — the café is covered.
-          </p>
-          <div className="toast-actions">
+          {orderOpen ? (
             <button
               type="button"
-              className="btn btn--small"
-              onClick={handleStartBreak}
-            >
-              Start break
-            </button>
-            {coffeeLevel > 0 ? (
-              <button
-                type="button"
-                className="toast-ghost"
-                onClick={handleSip}
-              >
-                Sip
-              </button>
-            ) : null}
-          </div>
-        </div>
-      ) : null}
-
-      {breakComplete && screen === "desk" ? (
-        <div className="ready-toast ready-toast--break" role="status" aria-live="polite">
-          <span className="ready-toast__dot" aria-hidden="true" />
-          <p>
-            <strong>Break complete.</strong> The cup is cleared — ready for
-            another focus?
-          </p>
-          <button type="button" className="btn btn--small" onClick={handlePrimary}>
-            Start focus · {formatDuration(focusDurationMs)}
-          </button>
-        </div>
+              className="sheet-scrim"
+              onClick={() => setOrderOpen(false)}
+              aria-label="Close order settings"
+            />
+          ) : null}
+        </>
       ) : null}
 
       {screen === "welcome" ? (

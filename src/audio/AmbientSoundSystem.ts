@@ -130,6 +130,55 @@ export class AmbientSoundSystem {
     source.stop(now + duration + 0.05);
   }
 
+  /** A soft, liquid puff while the espresso stream is running. */
+  playPourPuff(): void {
+    const ctx = this.init();
+    if (!ctx || !this.#master || !this.#noise) return;
+
+    const now = ctx.currentTime;
+    const duration = 1.2 + Math.random() * 0.4;
+
+    const source = ctx.createBufferSource();
+    source.buffer = this.#noise;
+
+    const liquidFilter = ctx.createBiquadFilter();
+    liquidFilter.type = "bandpass";
+    liquidFilter.frequency.setValueAtTime(420 + Math.random() * 90, now);
+    liquidFilter.frequency.exponentialRampToValueAtTime(760, now + duration);
+    liquidFilter.Q.setValueAtTime(0.9, now);
+
+    const liquidGain = ctx.createGain();
+    liquidGain.gain.setValueAtTime(0.0001, now);
+    liquidGain.gain.linearRampToValueAtTime(0.03, now + 0.14);
+    liquidGain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+    const hissFilter = ctx.createBiquadFilter();
+    hissFilter.type = "highpass";
+    hissFilter.frequency.setValueAtTime(2400, now);
+
+    const hissGain = ctx.createGain();
+    hissGain.gain.setValueAtTime(0.0001, now);
+    hissGain.gain.linearRampToValueAtTime(0.007, now + 0.24);
+    hissGain.gain.exponentialRampToValueAtTime(0.0001, now + duration * 0.7);
+
+    source.connect(liquidFilter).connect(liquidGain).connect(this.#master);
+    source.connect(hissFilter).connect(hissGain).connect(this.#master);
+    source.start(now);
+    source.stop(now + duration + 0.05);
+
+    const gurgle = ctx.createOscillator();
+    const gurgleGain = ctx.createGain();
+    gurgle.type = "sine";
+    gurgle.frequency.setValueAtTime(155, now);
+    gurgle.frequency.exponentialRampToValueAtTime(88, now + 0.55);
+    gurgleGain.gain.setValueAtTime(0.0001, now);
+    gurgleGain.gain.linearRampToValueAtTime(0.01, now + 0.08);
+    gurgleGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.6);
+    gurgle.connect(gurgleGain).connect(this.#master);
+    gurgle.start(now);
+    gurgle.stop(now + 0.65);
+  }
+
   /** Celebratory steam blast + chime when a pomodoro is served. */
   playLoudFinishSteam(): void {
     const ctx = this.init();

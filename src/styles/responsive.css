@@ -1,96 +1,69 @@
-/* --------------------------------------------------------------- responsive */
-@media (max-width: 1080px) {
-  .wall-zone {
-    min-height: 144px;
-    padding: 8px 18px 4px;
+/* --------------------------------------------------------- tighter desktops */
+@media (max-width: 1180px) {
+  .focus-card {
+    width: 278px;
+    padding: 18px 18px 15px;
   }
 
-  .table {
-    width: 100%;
-    max-width: 690px;
-    margin: 0 auto;
-    padding: 0 14px 26px;
+  .focus-card__time {
+    font-size: 2.7rem;
   }
 
-  .tabletop {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-areas:
-      "clock"
-      "machine"
-      "order"
-      "coaster";
-    justify-items: center;
-    gap: 18px;
-    padding: 26px 20px 24px;
-    border-radius: 24px 24px 8px 8px;
+  .order-ticket {
+    width: 354px;
+    padding: 22px 20px 16px;
   }
 
-  .clock-station {
-    width: 100%;
-  }
-
-  .espresso-machine {
-    width: 100%;
-    max-width: 516px;
-  }
-
-  .order-pad {
-    justify-self: center;
-    width: min(430px, 100%);
-    transform: none;
-  }
-
-  .coaster-station {
-    width: 100%;
-  }
-
-  .station-hint {
-    max-width: 360px;
-    min-height: 0;
-  }
-
-  .scene::before {
-    inset: -30px -20px auto;
-    height: 320px;
+  .ticket-order h2 {
+    font-size: 1.6rem;
   }
 }
 
-@media (max-width: 760px) {
+@media (max-width: 1020px) and (min-width: 901px) {
+  .focus-card {
+    width: 260px;
+    left: 20px;
+    bottom: 78px;
+  }
+
+  .focus-card__copy {
+    font-size: 0.72rem;
+  }
+
+  .focus-card__time {
+    font-size: 2.45rem;
+  }
+
+  .order-ticket {
+    width: 336px;
+    right: 20px;
+    padding: 20px 18px 15px;
+  }
+
+  .drink-choice {
+    padding: 6px 7px;
+  }
+
+  .drink-choice__name {
+    font-size: 0.6rem;
+  }
+
+  .drink-choice__note {
+    font-size: 0.49rem;
+  }
+}
+
+/* --------------------------------------------------------------- small desk */
+@media (max-width: 900px) {
   .app-shell {
-    padding: 0 14px;
+    height: 100dvh;
+    min-height: 100dvh;
+    overflow: hidden;
   }
 
   .top-bar {
-    padding-top: 12px;
-  }
-
-  .wall-zone {
-    min-height: 132px;
-    padding: 6px 10px 2px;
-  }
-
-  .cup-rack {
-    width: min(490px, 100%);
-  }
-
-  .table {
-    max-width: 640px;
-    padding: 0 10px 24px;
-  }
-
-  .tabletop {
-    padding: 24px 16px 22px;
-    gap: 16px;
-  }
-
-  .hints-bar {
-    padding-bottom: 16px;
-  }
-}
-
-@media (max-width: 560px) {
-  .app-shell {
-    padding: 0 10px;
+    padding: 14px 14px 8px;
+    gap: 10px;
   }
 
   .brand {
@@ -100,15 +73,15 @@
   .brand-badge {
     width: 38px;
     height: 38px;
-    border-radius: 12px;
   }
 
   .brand-name {
-    font-size: 1rem;
+    font-size: 1.05rem;
   }
 
   .brand-tag {
-    display: none;
+    font-size: 0.52rem;
+    letter-spacing: 0.16em;
   }
 
   .top-actions {
@@ -116,503 +89,458 @@
   }
 
   .session-chip {
-    gap: 5px;
-    padding: 8px 10px;
-  }
-
-  .session-chip__label {
-    display: none;
+    padding: 7px 10px;
+    font-size: 0.67rem;
   }
 
   .icon-button {
-    height: 34px;
-    min-width: 34px;
+    min-width: 32px;
+    height: 32px;
     padding: 0 8px;
   }
 
   .sound-group .icon-button {
-    height: 30px;
-    min-width: 30px;
+    height: 27px;
+    min-width: 29px;
+    padding: 0 6px;
   }
 
   .icon-button__label {
     display: none;
   }
 
-  .wall-zone {
-    min-height: 124px;
-    padding: 4px 4px 0;
+  .focus-card {
+    top: 74px;
+    left: 12px;
+    right: 12px;
+    bottom: auto;
+    width: auto;
+    max-height: calc(100dvh - 216px);
+    padding: 16px 16px 12px;
+    border-radius: 18px;
+    background:
+      linear-gradient(155deg, rgba(35, 50, 34, 0.5) 0%, rgba(14, 20, 14, 0.82) 48%, rgba(10, 14, 10, 0.9) 100%),
+      rgba(12, 17, 12, 0.74);
   }
 
-  .cup-rack {
-    gap: 5px;
+  .focus-card__time {
+    margin-top: 14px;
+    font-size: clamp(2.35rem, 7vw, 3rem);
   }
 
-  .cup-rack__heading {
-    padding: 0 6px 5px;
+  .focus-card__copy {
+    max-width: 45ch;
+    font-size: 0.73rem;
   }
 
-  .cup-rack__eyebrow {
-    font-size: 0.5rem;
-    letter-spacing: 0.17em;
+  .focus-card__progress {
+    margin-top: 13px;
   }
 
-  .cup-rack__selected {
-    font-size: 0.68rem;
+  .focus-card__actions {
+    flex-direction: row;
+    align-items: stretch;
+    margin-top: 12px;
   }
 
-  .cup-rack__row {
-    gap: 2px;
-    padding: 0 2px 12px;
+  .focus-card__primary {
+    flex: 1;
+    min-height: 42px;
   }
 
-  .rack-cup {
-    height: 62px;
+  .focus-card__stop {
+    flex: 0 0 auto;
+    min-width: 94px;
+    min-height: 42px;
+    padding: 0 10px;
+    border: 1px solid rgba(226, 194, 148, 0.14);
+    background: rgba(255, 255, 255, 0.035);
   }
 
-  .rack-cup__body {
-    width: 35px;
-    height: 29px;
-    border-radius: 4px 4px 13px 13px;
+  .focus-card__footer {
+    margin-top: 10px;
+    padding-top: 9px;
   }
 
-  .rack-cup__handle {
-    bottom: 11px;
-    left: calc(50% + 14px);
-    width: 12px;
-    height: 16px;
-    border-width: 3px;
+  .focus-card__order-link {
+    display: flex;
   }
 
-  .rack-cup__check {
-    top: -1px;
-    right: 1px;
-    width: 16px;
-    height: 16px;
+  .focus-card__cup {
+    margin-top: 12px;
   }
 
-  .cup-rack__caption {
-    font-size: 0.48rem;
+  .order-ticket {
+    position: fixed;
+    top: auto;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    z-index: 60;
+    width: auto;
+    max-height: calc(100dvh - 96px);
+    padding: 28px 19px 17px;
+    border-radius: 18px;
+    transform: translateY(calc(100% + 24px)) rotate(0deg);
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      transform 0.32s cubic-bezier(0.22, 0.9, 0.3, 1),
+      opacity 0.24s ease;
   }
 
-  .table {
-    padding: 0 6px 20px;
+  .order-ticket.is-open {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+    pointer-events: auto;
   }
 
-  .tabletop {
-    padding: 20px 10px 18px;
-    gap: 14px;
-    border-radius: 20px 20px 7px 7px;
-    border-top-width: 4px;
+  .order-ticket__close {
+    display: grid;
   }
 
-  .table-apron {
-    height: 20px;
-    margin: -2px 5px 0;
-  }
-
-  .table-apron__leg {
-    top: 17px;
-    height: 34px;
-    width: 24px;
-  }
-
-  .table-apron__leg--left {
-    left: 24px;
-  }
-
-  .table-apron__leg--right {
-    right: 24px;
-  }
-
-  .clock-station {
-    gap: 8px;
-  }
-
-  .clock-bezel {
-    width: 176px;
-  }
-
-  .clock-face {
-    width: 138px;
-    height: 138px;
-  }
-
-  .clock-time {
-    font-size: 1.95rem;
-  }
-
-  .clock-kicker {
-    font-size: 0.4rem;
-  }
-
-  .clock-state {
-    font-size: 0.4rem;
-    letter-spacing: 0.12em;
-  }
-
-  .clock-plinth {
-    width: 104px;
-  }
-
-  .streak-label {
-    font-size: 0.54rem;
-  }
-
-  .espresso-machine {
-    max-width: 500px;
-  }
-
-  .machine-top {
-    margin: 0 8px;
-    height: 23px;
-  }
-
-  .machine-shell {
-    padding: 11px 10px 8px;
-  }
-
-  .machine-brand {
-    gap: 7px;
-    padding-bottom: 7px;
-  }
-
-  .machine-brand__logo {
-    font-size: 0.58rem;
-    letter-spacing: 0.12em;
-  }
-
-  .machine-brand__model {
-    font-size: 0.58rem;
-  }
-
-  .machine-resources {
-    font-size: 0.44rem;
-  }
-
-  .machine-panel {
-    grid-template-columns: 62px minmax(0, 1fr) 46px;
-    gap: 7px;
-    padding: 7px;
-    margin: 8px 0 7px;
-  }
-
-  .gauge {
-    width: 58px;
-    height: 58px;
-  }
-
-  .gauge-needle {
-    height: 18px;
-  }
-
-  .lcd {
-    height: 58px;
-    padding: 6px 8px 5px;
-  }
-
-  .lcd-main {
-    font-size: 0.54rem;
-  }
-
-  .lcd-sub {
-    font-size: 0.43rem;
-  }
-
-  .machine-foot {
-    padding-top: 7px;
-  }
-
-  .machine-foot__label {
-    font-size: 0.36rem;
-    letter-spacing: 0.08em;
-  }
-
-  .machine-foot__legs {
-    gap: 76px;
-  }
-
-  .order-pad {
-    width: min(400px, 100%);
-    padding: 15px 13px 12px;
-    gap: 8px;
-    border-radius: 6px 6px 11px 11px;
-  }
-
-  .order-pad__clip {
-    width: 56px;
-    height: 23px;
-    top: -11px;
-  }
-
-  .pad-order__name {
-    font-size: 1.08rem;
-  }
-
-  .pad-chip {
-    font-size: 0.54rem;
-    padding: 5px 3px;
-  }
-
-  .pad-chip__hint {
-    font-size: 0.39rem;
-  }
-
-  .pad-primary {
-    font-size: 0.54rem;
-    letter-spacing: 0.04em;
-  }
-
-  .pad-stop {
-    flex-basis: 66px;
-    font-size: 0.44rem;
-  }
-
-  .coaster {
-    width: 160px;
-    height: 108px;
-  }
-
-  .station-hint {
-    font-size: 0.58rem;
-  }
-
-  .ready-toast {
-    bottom: 12px;
-    flex-wrap: wrap;
-    gap: 8px;
-    padding: 11px 12px;
-    border-radius: 14px;
-  }
-
-  .ready-toast__dot {
+  .order-ticket__clip {
     display: none;
   }
 
+  .ticket-head {
+    padding-right: 36px;
+  }
+
+  .ticket-order h2 {
+    font-size: 1.65rem;
+  }
+
+  .ticket-grid--2 {
+    gap: 7px;
+  }
+
+  .drink-choice {
+    min-height: 46px;
+    padding: 8px 9px;
+  }
+
+  .drink-choice__name {
+    font-size: 0.68rem;
+  }
+
+  .drink-choice__note {
+    font-size: 0.54rem;
+  }
+
+  .cup-choice {
+    width: 44px;
+    height: 44px;
+  }
+
+  .time-choice {
+    min-height: 44px;
+  }
+
+  .sheet-scrim {
+    display: block;
+  }
+
+  .service-bar {
+    min-height: 50px;
+    padding: 9px 14px;
+    gap: 10px;
+  }
+
+  .service-bar__keys {
+    display: none;
+  }
+
+  .service-bar__message {
+    font-size: 0.63rem;
+  }
+
+  .service-bar__status {
+    gap: 8px;
+  }
+
+  .service-bar__status strong {
+    font-size: 0.54rem;
+  }
+
+  .ready-toast {
+    bottom: 62px;
+    max-width: calc(100vw - 20px);
+    padding: 11px 12px;
+    gap: 10px;
+  }
+
   .ready-toast p {
-    flex: 1 1 100%;
-    font-size: 0.7rem;
+    font-size: 0.66rem;
+  }
+
+  .toast-actions {
+    gap: 5px;
+  }
+}
+
+/* ------------------------------------------------------------------- phones */
+@media (max-width: 600px) {
+  .top-bar {
+    padding: 11px 11px 6px;
+  }
+
+  .brand-tag {
+    display: none;
+  }
+
+  .brand-badge {
+    width: 34px;
+    height: 34px;
+  }
+
+  .brand-name {
+    font-size: 1rem;
+  }
+
+  .session-chip {
+    padding: 6px 9px;
+  }
+
+  .session-chip__label {
+    display: none;
+  }
+
+  .session-chip__count {
+    font-size: 0.72rem;
+  }
+
+  .sound-group {
+    padding: 2px;
+  }
+
+  .focus-card {
+    top: 62px;
+    left: 9px;
+    right: 9px;
+    max-height: calc(100dvh - 170px);
+    padding: 14px 14px 10px;
+    border-radius: 16px;
+  }
+
+  .focus-card__eyebrow {
+    font-size: 0.54rem;
+    letter-spacing: 0.14em;
+  }
+
+  .focus-card__tag {
+    padding: 4px 7px;
+    font-size: 0.5rem;
+  }
+
+  .focus-card__time {
+    margin: 12px 0 6px;
+    font-size: clamp(2.2rem, 12vw, 2.8rem);
+  }
+
+  .focus-card__copy {
+    display: -webkit-box;
+    overflow: hidden;
+    max-width: none;
+    font-size: 0.68rem;
+    line-height: 1.45;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .focus-card__service {
+    display: none;
+  }
+
+  .focus-card__meta {
+    font-size: 0.52rem;
+  }
+
+  .focus-card__cup {
+    padding: 9px 10px;
+  }
+
+  .focus-card__cup-head {
+    font-size: 0.63rem;
+  }
+
+  .focus-card__actions {
+    gap: 6px;
+  }
+
+  .focus-card__primary {
+    min-height: 39px;
+    font-size: 0.68rem;
+  }
+
+  .focus-card__stop {
+    min-width: 80px;
+    min-height: 39px;
+    font-size: 0.53rem;
+  }
+
+  .focus-card__footer {
+    display: none;
+  }
+
+  .focus-card__order-link {
+    min-height: 33px;
+    margin-top: 8px;
+    font-size: 0.62rem;
+  }
+
+  .order-ticket {
+    left: 7px;
+    right: 7px;
+    bottom: 7px;
+    max-height: calc(100dvh - 78px);
+    padding: 25px 15px 14px;
+    border-radius: 16px;
+  }
+
+  .ticket-order h2 {
+    font-size: 1.45rem;
+  }
+
+  .ticket-order__stamp {
+    width: 40px;
+    height: 40px;
+    font-size: 0.48rem;
+  }
+
+  .ticket-grid--3 {
+    gap: 5px;
+  }
+
+  .time-choice {
+    padding: 6px;
+  }
+
+  .time-choice span {
+    font-size: 0.59rem;
+  }
+
+  .time-choice em {
+    font-size: 0.5rem;
+  }
+
+  .time-choice--compact span {
+    font-size: 0.55rem;
+  }
+
+  .cup-choice-row {
+    justify-content: flex-start;
+    gap: 5px;
+    flex-wrap: wrap;
+  }
+
+  .cup-choice {
+    width: 40px;
+    height: 40px;
+  }
+
+  .ticket-footer {
+    font-size: 0.54rem;
+  }
+
+  .service-bar {
+    min-height: 46px;
+    padding: 8px 10px;
+  }
+
+  .service-bar__message {
+    font-size: 0.58rem;
+  }
+
+  .service-bar__sip {
+    display: none;
+  }
+
+  .ready-toast {
+    bottom: 56px;
+    flex-wrap: wrap;
+    border-radius: 13px;
+  }
+
+  .ready-toast p {
+    flex-basis: calc(100% - 20px);
   }
 
   .toast-actions {
     width: 100%;
     justify-content: flex-end;
   }
+}
 
-  .ready-toast > .btn--small {
-    margin-left: auto;
+@media (max-height: 720px) and (min-width: 901px) {
+  .focus-card {
+    bottom: 72px;
+    max-height: calc(100dvh - 130px);
+    padding-top: 16px;
+    padding-bottom: 12px;
   }
 
-  .modal-overlay {
-    padding: 14px;
+  .focus-card__time {
+    margin-top: 12px;
+    font-size: 2.55rem;
   }
 
-  .modal-card {
-    padding: 24px 20px;
-    border-radius: 22px;
+  .focus-card__copy {
+    font-size: 0.7rem;
   }
 
-  .welcome-list {
-    margin-bottom: 20px;
-    gap: 10px;
+  .focus-card__progress {
+    margin: 11px 0 7px;
   }
 
-  .modal-actions .btn {
-    flex: 1 1 100%;
+  .focus-card__actions {
+    margin-top: 10px;
   }
 
-  .hints-bar {
-    gap: 10px;
-    font-size: 0.62rem;
+  .focus-card__footer {
+    margin-top: 8px;
   }
 
-  .hint--soft {
-    display: none;
+  .order-ticket {
+    top: 70px;
+    max-height: calc(100dvh - 132px);
   }
 }
 
-@media (max-width: 420px) {
-  .brand-name {
-    font-size: 0.92rem;
+/* ------------------------------------------------- compact desktop drawer */
+@media (min-width: 901px) and (max-width: 1240px) {
+  .focus-card__order-link {
+    display: flex;
   }
 
-  .cup-rack__eyebrow {
-    font-size: 0.46rem;
+  .order-ticket {
+    position: fixed;
+    top: 82px;
+    right: 18px;
+    bottom: auto;
+    left: auto;
+    z-index: 60;
+    width: min(372px, calc(100vw - 36px));
+    max-height: calc(100dvh - 158px);
+    transform: translateX(calc(100% + 28px)) rotate(0deg);
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      transform 0.3s cubic-bezier(0.22, 0.9, 0.3, 1),
+      opacity 0.22s ease;
   }
 
-  .cup-rack__selected {
-    font-size: 0.62rem;
+  .order-ticket.is-open {
+    transform: translateX(0) rotate(0deg);
+    opacity: 1;
+    pointer-events: auto;
   }
 
-  .rack-cup__body {
-    width: 32px;
-    height: 27px;
+  .order-ticket__close {
+    display: grid;
   }
 
-  .rack-cup__handle {
-    left: calc(50% + 12px);
-    width: 11px;
-    height: 15px;
-  }
-
-  .clock-bezel {
-    width: 164px;
-  }
-
-  .clock-face {
-    width: 128px;
-    height: 128px;
-  }
-
-  .clock-time {
-    font-size: 1.8rem;
-  }
-
-  .clock-kicker {
-    font-size: 0.37rem;
-  }
-
-  .clock-state {
-    font-size: 0.37rem;
-  }
-
-  .machine-brand__model {
-    display: none;
-  }
-
-  .machine-resources {
-    margin-left: auto;
-  }
-
-  .machine-panel {
-    grid-template-columns: 56px minmax(0, 1fr) 40px;
-    gap: 6px;
-    padding: 6px;
-  }
-
-  .gauge {
-    width: 52px;
-    height: 52px;
-  }
-
-  .gauge::before {
-    inset: 5px;
-  }
-
-  .gauge-label {
-    top: 8px;
-    font-size: 0.34rem;
-  }
-
-  .gauge-value {
-    bottom: 6px;
-    font-size: 0.34rem;
-  }
-
-  .gauge-needle {
-    height: 16px;
-  }
-
-  .lcd {
-    height: 54px;
-    padding: 5px 7px 4px;
-  }
-
-  .lcd-main {
-    font-size: 0.49rem;
-  }
-
-  .lcd-sub {
-    font-size: 0.39rem;
-  }
-
-  .toggle {
-    width: 14px;
-    height: 18px;
-  }
-
-  .machine-foot__label {
-    display: none;
-  }
-
-  .machine-foot__legs {
-    margin-left: auto;
-    gap: 0;
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .pad-chip--time .pad-chip__hint {
-    display: none;
-  }
-
-  .pad-chip--compact .pad-chip__label {
-    font-size: 0.48rem;
-  }
-
-  .pad-grid--4 {
-    gap: 3px;
-  }
-
-  .custom-label {
-    display: none;
-  }
-
-  .pad-primary {
-    font-size: 0.5rem;
-    padding: 9px 6px;
-  }
-
-  .pad-stop {
-    flex-basis: 60px;
-    font-size: 0.4rem;
-  }
-
-  .service-ticket__message {
-    font-size: 0.78rem;
-  }
-
-  .toast-ghost {
-    padding: 7px 9px;
-    font-size: 0.62rem;
-  }
-}
-
-@media (max-width: 360px) {
-  .brand-name {
-    font-size: 0.86rem;
-  }
-
-  .cup-rack__selected {
-    display: none;
-  }
-
-  .clock-bezel {
-    width: 154px;
-  }
-
-  .clock-face {
-    width: 120px;
-    height: 120px;
-  }
-
-  .clock-time {
-    font-size: 1.66rem;
-  }
-
-  .pad-chip {
-    font-size: 0.5rem;
-  }
-
-  .pad-chip--compact .pad-chip__label {
-    font-size: 0.44rem;
-  }
-
-  .pad-order__name {
-    font-size: 1rem;
-  }
-
-  .pad-actions {
-    gap: 4px;
+  .sheet-scrim {
+    display: block;
   }
 }

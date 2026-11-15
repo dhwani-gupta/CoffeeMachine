@@ -5,9 +5,9 @@ the wall, set a focus session, and let a commercial espresso machine pull your
 reward in steam pulses. When the focus ends, the coffee is served — start your
 break and sip it slowly while the café-service messages roll in.
 
-Built with **React 19 + Vite + TypeScript**, converted from the original
-single-file `index.html` build and kept dependency-light: every visual is
-handcrafted CSS and every sound is synthesised with the Web Audio API.
+Built with **React 19 + Vite + TypeScript**. The interface is crisp HTML/CSS;
+the café itself is a full-screen **React Three Fiber** scene with a local HDRI,
+a real GLTF table, PBR materials, soft shadows and postprocessing.
 
 ## Getting started
 
@@ -28,13 +28,14 @@ npm run preview   # serve the production build
 1. **Pick a cup.** Six glazes sit on the wooden wall rack above the machine.
    The cup is yours for the session; it appears on the machine tray or coaster.
 2. **Set focus and break.** Use the presets or enter custom minutes on the order
-   pad. Focus defaults to 25 minutes, break to 5.
+   ticket. Focus defaults to 25 minutes, break to 5.
 3. **Focus.** Load the mug and start. The machine brews while the clock ring
-   fills; the LCD and pressure gauge keep you company.
+   fills; the cup sits in front of the group head and the espresso stream is
+   visible while it pours.
 4. **Coffee is served.** Focus completion serves the drink — it does **not**
-   auto-start the break. Start the break from the order pad or the toast.
+   auto-start the break. Start the break from the order ticket or the toast.
 5. **Take your break.** Sip from the cup during the break. Each sip lowers the
-   coffee by 20% (five sips empty the cup). The LCD and order pad show café
+   coffee by 20% (five sips empty the cup). The LCD and order ticket show café
    service messages — serving other customers, steaming oat milk, wiping the
    counter, and so on.
 6. **Back to it.** The break ends, the cup is cleared, and the next focus is
@@ -42,15 +43,29 @@ npm run preview   # serve the production build
 
 ## Features
 
-**The scene**
+**The 3D café**
 
-- Wooden café table with a barista's order pad, coaster, desk clock and a
-  stainless commercial espresso machine (group head, portafilter, steam and
-  hot-water wands, pressure gauge, LCD and drip tray).
-- Wall-mounted cup rack with six ceramic glazes: porcelain, sage, terracotta,
-  cobalt, honey and rose.
-- The selected cup is visible on the tray or coaster and is fully sip-able
-  during breaks.
+- Full-screen React Three Fiber scene with a warm, eye-level camera. The table
+  and machine are centred in the composition instead of sitting in a corner.
+- Local Poly Haven **Comfy Café** HDRI powers environment light and the
+  reflections on chrome, glass and glazed ceramic.
+- Real Poly Haven **WoodenTable_01** GLTF table, plus PBR wood, floor, plaster,
+  metal, porcelain and cork maps from ambientCG.
+- Detailed espresso machine built from Three.js geometry: forest-green
+  powder-coated body, brushed steel faceplate, chrome group head, angled
+  portafilter with a wooden handle, gauges, LCD, knurled knobs, steam wands,
+  drip tray and a cup warmer.
+- Big cappuccino cup on a saucer, a visible espresso stream, splash ring and
+  cup steam. The same cup travels from the coaster to the machine tray and back.
+- Wall-mounted cup shelf with six ceramic glazes: porcelain, sage, terracotta,
+  cobalt, honey and rose. Cups sit fully on the shelf and remain crisp and
+  clickable — there is deliberately **no depth-of-field blur on the interactive
+  cups**.
+- Natural window light, warm practical lights, a low front fill, soft directional
+  shadows, contact shadows, ambient occlusion (N8AO), subtle bloom and a
+  vignette.
+- Responsive camera framing and a reduced-motion mode that keeps the scene
+  static.
 
 **Focus and break modes**
 
@@ -75,6 +90,14 @@ npm run preview   # serve the production build
 - Break completion (or ending the break/focus early) clears the coffee and the
   cup level.
 
+**Sound**
+
+- Every sound is synthesised at runtime with the Web Audio API; there are no
+  audio files to download.
+- The gentle pour puff is a filtered noise + low gurgle layer, triggered when
+  brewing starts and occasionally during the first part of a focus session.
+- Global mute and lo-fi ambience are independent.
+
 **Controls and polish**
 
 - Load or return the mug by dragging **or tapping** it.
@@ -85,26 +108,30 @@ npm run preview   # serve the production build
 - Persisted preferences and session count via `localStorage` (`cm.*` keys).
 - Document title reflects the running focus/break state.
 - Deadline-based timer (no drift while the tab is throttled or backgrounded).
-- Global mute and lo-fi ambience are independent; sounds are generated in the
-  browser with no audio files.
 - Accessible dialogs with focus trapping, `aria-live` machine status, visible
   keyboard focus, and reduced-motion support.
-- Responsive three-column tabletop that becomes a centred single-column scene
-  on tablets and phones.
+- Responsive desktop composition becomes a focused single-column scene on
+  tablets and phones, with the order ticket moving into a drawer or bottom
+  sheet.
 
 ## Architecture
 
-- React function components with TypeScript.
-- Brewing/break logic lives in the object-oriented `PomodoroEspressoMachine`
-  built on the abstract `BaseBrewingAppliance`, bridged to React through
-  `usePomodoroMachine`.
-- Timer state is mode-aware (`focus` / `break`, `idle` / `running` / `paused` /
-  `complete`) and snapshot-driven.
-- Data tables for drinks, cup styles, presets, sip constants and service
-  messages live in `src/data/cafe.ts`.
-- CSS is split into tokens/reset, scene, machine + order pad, overlays and
-  responsive files.
-- Web Audio synthesis is encapsulated in `AmbientSoundSystem`.
+- **UI:** React function components with TypeScript and CSS overlays layered
+  over the canvas.
+- **3D:** `@react-three/fiber` + `@react-three/drei` for the scene, GLTF/HDR
+  loading and soft shadows. `@react-three/postprocessing`, `postprocessing` and
+  `n8ao` provide ambient occlusion, bloom and vignette.
+- **Domain:** brewing/break logic lives in the object-oriented
+  `PomodoroEspressoMachine`, built on the abstract `BaseBrewingAppliance`, and
+  is bridged to React through `usePomodoroMachine`. Timer state is mode-aware
+  (`focus` / `break`, `idle` / `running` / `paused` / `complete`) and
+  snapshot-driven.
+- **Assets:** paths live in `src/three/assets.ts`; `usePbrTextures` loads,
+  tiles and caches PBR maps. `src/three/textures.ts` keeps the small procedural
+  LCD, gauge, steam and shadow textures.
+- **Audio:** Web Audio synthesis is encapsulated in `AmbientSoundSystem`.
+- **Data:** drinks, cup styles, presets, sip constants and service messages
+  live in `src/data/cafe.ts`.
 
 ## Project structure
 
@@ -115,7 +142,7 @@ src/
   App.tsx                         Screen flow, focus/break/cup/coffee state
   types.ts                        Shared domain types
   audio/
-    AmbientSoundSystem.ts         Clicks, steam, sip, break chime, lo-fi
+    AmbientSoundSystem.ts         Clicks, steam, pour puff, sip, chime, lo-fi
   data/
     cafe.ts                       Drinks, cup glazes, presets, service messages
   domain/
@@ -123,29 +150,47 @@ src/
   hooks/
     usePomodoroMachine.ts         React bridge for the machine
   components/
-    TopBar.tsx
-    ClockStation.tsx              Desk clock, progress ring, session pips
-    CupRack.tsx                   Wall-mounted cup selector
-    EspressoMachine.tsx           Commercial machine + brew deck
-    Cup.tsx                       Ceramic cup, liquid level, steam, sips
-    CoasterStation.tsx            Coaster + cup drop target
-    OrderPad.tsx                  Drinks, focus/break config, service ticket
-    Modal.tsx
-    WelcomeDialog.tsx
-    ExitDialog.tsx
-    HelpDialog.tsx
-    icons.tsx
+    FocusCard.tsx                 Timer, primary action and session controls
+    OrderTicket.tsx               Drinks, focus/break config, cup selection
+    TopBar.tsx, ServiceTicker.tsx
+    HelpDialog.tsx, WelcomeDialog.tsx, ExitDialog.tsx, Modal.tsx
+  three/
+    CafeScene.tsx                 Canvas, camera, lighting, postprocessing
+    CafeRoom.tsx                  Room, window, curtains, pendant, plant
+    CafeTable.tsx                 GLTF table, props, cup movement
+    MachineModel.tsx              Espresso machine, pour stream
+    CupModel.tsx                  Ceramic cup, saucer, coffee, steam
+    MugShelf.tsx                  Wall shelf and selectable cups
+    assets.ts                     Local asset paths
+    usePbrTextures.ts             PBR loading, tiling and cache
+    textures.ts                   LCD/gauge/steam/shadow textures
   lib/
     format.ts                     Time formatting / clamping
-    storage.ts                    Safe localStorage helpers
+    cup.ts, storage.ts            Cup helpers and safe localStorage
   styles/
     base.css, scene.css, machine.css, overlays.css, responsive.css
+public/
+  hdri/                           Local Comfy Café HDRI
+  models/wooden-table/            Poly Haven table GLTF + textures
+  textures/                       ambientCG PBR maps
 legacy/
   pomodoro-original.html          Preserved original single-file version
 ```
 
 The other HTML experiments (`cozy_office_coffee_maker.html`,
 `pomodoroCoffeeMachine.html`) were left untouched.
+
+## Assets and credits
+
+All bundled 3D assets are local and CC0. See [`ASSETS.md`](./ASSETS.md) for
+source links and details.
+
+- **Comfy Café HDRI** — Poly Haven, CC0.
+- **WoodenTable_01** — Poly Haven, CC0.
+- **Wood051, WoodFloor064, Metal009, PaintedPlaster017, Porcelain001,
+  Cork001** — ambientCG, CC0.
+- The espresso machine, cups, saucer, spoon and small props are custom Three.js
+  geometry built for this project.
 
 ## Notes
 

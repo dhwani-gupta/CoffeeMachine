@@ -168,8 +168,10 @@ export function EspressoMachine({
             <span className="gauge-value">{gaugeValue}</span>
           </div>
 
-          <div className="lcd" role="status" aria-live="polite">
-            <span className="lcd-main">{copy.main}</span>
+          <div className="lcd">
+            <span className="lcd-main" role="status" aria-live="polite" aria-atomic="true">
+              {copy.main}
+            </span>
             <span className="lcd-sub">{copy.sub}</span>
             <span className="lcd-meter" aria-hidden="true">
               <span style={{ width: `${Math.round(meterProgress * 100)}%` }} />

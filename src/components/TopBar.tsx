@@ -32,7 +32,7 @@ export function TopBar({
           <IconCup width={22} height={22} />
         </span>
         <span className="brand-copy">
-          <span className="brand-name">Breakroom Focus Desk</span>
+          <span className="brand-name">Breakroom</span>
           <span className="brand-tag">Pomodoro café · est. 2026</span>
         </span>
       </div>

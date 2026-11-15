@@ -107,6 +107,16 @@ export function IconSparkle(props: IconProps) {
   );
 }
 
+export function IconSliders(props: IconProps) {
+  return (
+    <svg {...baseProps(props)}>
+      <path d="M4 7h8M16 7h4M4 17h3M11 17h9" />
+      <circle cx="14" cy="7" r="2.2" />
+      <circle cx="8.5" cy="17" r="2.2" />
+    </svg>
+  );
+}
+
 export function IconClose(props: IconProps) {
   return (
     <svg {...baseProps(props)}>
